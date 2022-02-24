@@ -1,12 +1,13 @@
-package com.objectsky.wiki;
+package com.objectsky.wiki.config;
 
-import com.mysql.cj.log.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
 
+@ComponentScan(value = "com.objectsky") // 因为修改了启动了的路径 不加这个注解的话他扫描不了包
 @SpringBootApplication
 public class ObjectSkyWikiProgramApplication {
 

@@ -1,0 +1,18 @@
+POST http://localhost:8080/hello1
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="name"
+
+ale
+--WebAppBoundary--
+
+
+name=ale
+
+###
+GET http://localhost:8080/hello
+Accept: application/json
+
+### post test
+

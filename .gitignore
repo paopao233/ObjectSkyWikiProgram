@@ -1,2 +1,7 @@
-/log/
-target/
+/.log/error.log
+/logs/quickstart.log
+/logs/smt-2022-02-24_17.0
+/.log/trace.log
+/.log/
+/target/
+/.idea/
