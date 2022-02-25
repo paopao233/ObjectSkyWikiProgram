@@ -1,4 +1,4 @@
-package com.objectsky.wiki.resp;
+package com.objectsky.wiki.common.resp;
 
 public class CommonResp<T> {
 
