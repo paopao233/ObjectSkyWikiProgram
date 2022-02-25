@@ -1,5 +1,6 @@
 package com.objectsky.wiki.config;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 @ComponentScan(value = "com.objectsky") // 因为修改了启动了的路径 不加这个注解的话他扫描不了包
+@MapperScan(value = "com.objectsky.wiki.mapper")
 @SpringBootApplication
 public class ObjectSkyWikiProgramApplication {
 
