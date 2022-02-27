@@ -1,6 +1,7 @@
 package com.objectsky.wiki.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.objectsky.wiki.common.dto.EbookDto;
 import com.objectsky.wiki.common.utils.CopyUtil;
@@ -29,8 +30,10 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
     @Override
     public List<EbookVo> ebookList(EbookDto ebookDto) {
         QueryWrapper<Ebook> wrapper = new QueryWrapper<>();
-        wrapper.like("name", ebookDto.getName());
-
+//        wrapper.like("name", ebookDto.getName());
+        if(!ObjectUtils.isEmpty(ebookDto.getName())){
+            wrapper.like("name", ebookDto.getName());
+        }
         List<Ebook> ebooksListDb = ebookMapper.selectList(wrapper);
 
 //        List<EbookVo> ebookList = new ArrayList<>();
