@@ -1,10 +1,9 @@
 <template>
+  <!-- 这里是每个页面都变动都内容 -->
   <a-layout>
     <a-layout-sider width="200" style="background: #fff">
       <a-menu
           mode="inline"
-          v-model:selectedKeys="selectedKeys2"
-          v-model:openKeys="openKeys"
           :style="{ height: '100%', borderRight: 0 }"
       >
         <a-sub-menu key="sub1">
@@ -54,13 +53,16 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
+import axios from 'axios';
+import { defineComponent } from 'vue';
 
-@Options({
-  components: {
-    HelloWorld,
-  },
-})
-export default class Home extends Vue {}
+export default defineComponent({
+  /* vue3 新增的 */
+  setup(){
+    console.log("setup cl")
+    axios.get("http://localhost:8080/ebook/list?name=spring").then((res)=>{
+      console.log(res)
+    });
+  }
+});
 </script>
