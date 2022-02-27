@@ -114,7 +114,6 @@ export default defineComponent({
         ebooks.value = data.data;
         ebooks1.books = data.data;
 
-        console.log(res)
       });
     });
 
