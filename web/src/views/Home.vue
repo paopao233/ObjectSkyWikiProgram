@@ -48,37 +48,25 @@
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
 
-      <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="listData">
-        <template #footer>
-          <div>
-            <b>ant design vue</b>
-            footer part
-          </div>
-        </template>
+      <!--   data-source是一个列表 会被循环   -->
+      <a-list item-layout="vertical" size="large" :grid="{ gutter: 20,  xs:1, sm: 2, md: 3, lg: 4, xl:4, xxl: 4}"
+              :data-source="ebooks">
         <template #renderItem="{ item }">
-          <a-list-item key="item.title">
+          <a-list-item key="item.name">
             <template #actions>
-          <span v-for="{ type, text } in actions" :key="type">
-            <component v-bind:is="type" style="margin-right: 8px"/>
-            {{ text }}
-          </span>
-            </template>
-            <template #extra>
-              <img
-                  width="272"
-                  alt="logo"
-                  src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-              />
+                <span v-for="{ type, text } in actions" :key="type">
+                  <component v-bind:is="type" style="margin-right: 8px"/>
+                  {{ text }}
+                </span>
             </template>
             <a-list-item-meta :description="item.description">
               <template #title>
-                <a :href="item.href">{{ item.title }}</a>
+                <a :href="item.href">{{ item.name }}</a>
               </template>
               <template #avatar>
-                <a-avatar :src="item.avatar"/>
+                <a-avatar :src="item.cover"/>
               </template>
             </a-list-item-meta>
-            {{ item.content }}
           </a-list-item>
         </template>
       </a-list>
@@ -90,7 +78,7 @@
 <script lang="ts">
 import axios from 'axios';
 import {defineComponent, onMounted, ref, reactive, toRef} from 'vue';
-// import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
+import {StarOutlined, LikeOutlined, MessageOutlined} from '@ant-design/icons-vue';
 
 const listData: Record<string, string>[] = [];
 for (let i = 0; i < 23; i++) {
@@ -106,11 +94,11 @@ for (let i = 0; i < 23; i++) {
 }
 
 export default defineComponent({
-  // components: {
-  //   StarOutlined,
-  //   LikeOutlined,
-  //   MessageOutlined,
-  // },
+  components: {
+    StarOutlined,
+    LikeOutlined,
+    MessageOutlined,
+  },
 
   /* vue3 新增的 */
   setup() {
@@ -121,7 +109,7 @@ export default defineComponent({
      * onMounted是指页面加载的时候会加载的函数 跟微信小城西onload一样
      */
     onMounted(() => {
-      axios.get("http://localhost:8080/ebook/list?name=spring").then((res) => {
+      axios.get("http://localhost:8088/ebook/list").then((res) => {
         const data = res.data;
         ebooks.value = data.data;
         ebooks1.books = data.data;
@@ -159,3 +147,14 @@ export default defineComponent({
 })
 ;
 </script>
+
+<!-- scoped: 表示只在当前组件起作用 -->
+<style scoped>
+  .ant-avatar {
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 8%;
+    margin: 5px 0;
+  }
+</style>
