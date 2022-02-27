@@ -1,30 +1,25 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view/>
+  <!-- 不变化的部分写在app.vue这个页面 变化的就写在各自的页面即可 -->
+  <a-layout>
+    <the-header></the-header>
+    <router-view/>
+    <the-footer></the-footer>
+  </a-layout>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script lang="ts">
+import TheHeader from '@/components/the-header.vue';
+import TheFooter from '@/components/the-footer.vue';
+import {defineComponent} from "vue"; // @ is an alias to /src
 
-#nav {
-  padding: 30px;
-}
+export default defineComponent({
+  name:'app',
+  components: {
+    TheHeader,
+    TheFooter,
+  },
+})
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+</script>
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+
