@@ -109,7 +109,7 @@ export default defineComponent({
      * onMounted是指页面加载的时候会加载的函数 跟微信小城西onload一样
      */
     onMounted(() => {
-      axios.get(process.env.VUE_APP_SERVER + "/ebook/list").then((res) => {
+      axios.get("/ebook/list").then((res) => {
         const data = res.data;
         ebooks.value = data.data;
         ebooks1.books = data.data;
