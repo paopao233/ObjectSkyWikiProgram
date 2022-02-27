@@ -109,7 +109,7 @@ export default defineComponent({
      * onMounted是指页面加载的时候会加载的函数 跟微信小城西onload一样
      */
     onMounted(() => {
-      axios.get("http://localhost:8088/ebook/list").then((res) => {
+      axios.get(process.env.VUE_APP_SERVER + "/ebook/list").then((res) => {
         const data = res.data;
         ebooks.value = data.data;
         ebooks1.books = data.data;
@@ -150,11 +150,11 @@ export default defineComponent({
 
 <!-- scoped: 表示只在当前组件起作用 -->
 <style scoped>
-  .ant-avatar {
-    width: 50px;
-    height: 50px;
-    line-height: 50px;
-    border-radius: 8%;
-    margin: 5px 0;
-  }
+.ant-avatar {
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  border-radius: 8%;
+  margin: 5px 0;
+}
 </style>
