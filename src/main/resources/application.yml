@@ -11,6 +11,8 @@ spring:
 # 配置mybatis所有Mapper.xml所在的路径
 mybatis:
   mapper-locations: classpath:/mapper/**/*.xml
+# 开启日志
+logging:
+  level:
+    com.objectsky.wiki: trace
 
-test:
-  name2: 'alew'
