@@ -8,6 +8,7 @@ import com.github.pagehelper.PageInfo;
 import com.objectsky.wiki.common.dto.EbookDto;
 import com.objectsky.wiki.common.utils.CopyUtil;
 import com.objectsky.wiki.common.vo.EbookVo;
+import com.objectsky.wiki.common.vo.PageVo;
 import com.objectsky.wiki.entity.Ebook;
 import com.objectsky.wiki.mapper.EbookMapper;
 import com.objectsky.wiki.service.EbookService;
@@ -34,26 +35,31 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
     private EbookMapper ebookMapper;
 
     @Override
-    public List<EbookVo> ebookList(EbookDto ebookDto) {
-        
+    public PageVo<EbookVo> ebookList(EbookDto ebookDto) {
+
         // 条件
         QueryWrapper<Ebook> wrapper = new QueryWrapper<>();
-        if(!ObjectUtils.isEmpty(ebookDto.getName())){
+        if (!ObjectUtils.isEmpty(ebookDto.getName())) {
             wrapper.like("name", ebookDto.getName());
         }
 
         // 查询
         // 分页
-        PageHelper.startPage(1,3); // 只对遇到对第一个sql起作用
+        PageHelper.startPage(ebookDto.getPage(), ebookDto.getSize()); // 只对遇到对第一个sql起作用
         List<Ebook> ebooksListDb = ebookMapper.selectList(wrapper);
 
 
         // 用工具将listdb的数据复制到vo里面去
         List<EbookVo> ebookVoList = CopyUtil.copyList(ebooksListDb, EbookVo.class);
         PageInfo<EbookVo> pageInfo = new PageInfo<>(ebookVoList);
-        LOG.info("总行：{}",pageInfo.getTotal());
+        LOG.info("总行：{}", pageInfo.getTotal());
+        LOG.info("总页数：{}", pageInfo.getPages());
 
+        // 设置分页vo
+        PageVo<EbookVo> pageVo = new PageVo<>();
+        pageVo.setTotal(pageInfo.getTotal());
+        pageVo.setList(ebookVoList);
 
-        return ebookVoList;
+        return pageVo;
     }
 }
