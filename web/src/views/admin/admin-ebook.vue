@@ -53,7 +53,7 @@
           :dataSource="ebooks"
           :columns="columns"
           :row-key="record => record.id"
-          :pagination:="pagination"
+          :pagination="pagination"
           :loading="loading"
           @change="handleTableChange"
       >
@@ -88,7 +88,7 @@ export default defineComponent({
     const ebooks = ref(); // 响应式的数据：可实时刷新到界面上
     const pagination = ref({
       current: 1,
-      pageSize: 2,
+      pageSize: 4,
       total: 0
     });
     const loading = ref(false);
@@ -131,12 +131,20 @@ export default defineComponent({
     const handleQuery = (params: any) => {
       loading.value = true;
       // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
-      axios.get('/ebook/list', params).then((res) => {
+      axios.get('/ebook/list', {
+            //params:{} 是axios固定写法 而且一般不会把整个params传入进去 都是写好要哪些
+            params: {
+              page: params.page,
+              size: params.size,
+            }
+          }
+      ).then((res) => {
         loading.value = false;
         const data = res.data;
-        ebooks.value = data.data;
+        ebooks.value = data.data.list;
         // 重置分页按钮
         pagination.value.current = params.page;
+        pagination.value.total = data.data.total;
       });
     };
 
@@ -254,7 +262,10 @@ export default defineComponent({
     // };
 
     onMounted(() => {
-      handleQuery({});
+      handleQuery({
+        page: 1,
+        size: pagination.value.pageSize
+      });
     });
 
     return {
@@ -271,8 +282,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
-  img {
-    width: 50px;
-    height: 50px;
-  }
+img {
+  width: 50px;
+  height: 50px;
+}
 </style>
