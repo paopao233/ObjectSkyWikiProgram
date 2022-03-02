@@ -5,7 +5,8 @@ import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.objectsky.wiki.common.dto.EbookDto;
+import com.objectsky.wiki.common.dto.EbookQueryDto;
+import com.objectsky.wiki.common.dto.EbookSaveDto;
 import com.objectsky.wiki.common.utils.CopyUtil;
 import com.objectsky.wiki.common.vo.EbookVo;
 import com.objectsky.wiki.common.vo.PageVo;
@@ -35,7 +36,7 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
     private EbookMapper ebookMapper;
 
     @Override
-    public PageVo<EbookVo> ebookList(EbookDto ebookDto) {
+    public PageVo<EbookVo> ebookList(EbookQueryDto ebookDto) {
 
         // 条件
         QueryWrapper<Ebook> wrapper = new QueryWrapper<>();
@@ -61,5 +62,17 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
         pageVo.setList(ebookVoList);
 
         return pageVo;
+    }
+
+    @Override
+    public void ebookSaveById(EbookSaveDto ebookSaveDto) {
+        Ebook ebook = CopyUtil.copy(ebookSaveDto, Ebook.class);
+        if (ObjectUtils.isEmpty(ebookSaveDto.getId())) {
+            // 新增
+            ebookMapper.insert(ebook);
+        } else {
+            // 更新
+            ebookMapper.updateById(ebook);
+        }
     }
 }

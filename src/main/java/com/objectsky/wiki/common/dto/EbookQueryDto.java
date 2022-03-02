@@ -10,7 +10,7 @@ import lombok.Data;
  * @Modified By:
  */
 @Data
-public class EbookDto extends PageDto{
+public class EbookQueryDto extends PageDto{
     /**
      * id
      */
