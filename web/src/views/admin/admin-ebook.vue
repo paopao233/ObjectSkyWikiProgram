@@ -47,7 +47,9 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-
+      <a-button type="primary" @click="add" size="large">
+        新增
+      </a-button>
       <!--   data-source是一个列表 会被循环   -->
       <a-table
           :dataSource="ebooks"
@@ -200,10 +202,22 @@ export default defineComponent({
     const visible = ref<boolean>(false);
     const confirmLoading = ref<boolean>(false);
 
+    /**
+     * 编辑
+     * @param record
+     */
     const edit = (record: any) => {
       visible.value = true;
       ebook.value = record; // 响应式的变量都是得用value
 
+    };
+
+    /**
+     * 新增
+     */
+    const add = () => {
+      visible.value = true;
+      ebook.value = {}; // 清空ebook
     };
 
     /**
@@ -213,7 +227,7 @@ export default defineComponent({
       confirmLoading.value = true;
       axios.post('/ebook/save', ebook.value).then((res) => {
         const data = res.data;
-        if(data.success){
+        if (data.success) {
           visible.value = false;
           confirmLoading.value = false;
           // 重新加载列表
@@ -250,6 +264,9 @@ export default defineComponent({
 
       // form
       ebook,
+
+      // add
+      add
     }
   }
 });

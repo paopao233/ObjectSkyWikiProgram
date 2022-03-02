@@ -8,6 +8,7 @@ import com.github.pagehelper.PageInfo;
 import com.objectsky.wiki.common.dto.EbookQueryDto;
 import com.objectsky.wiki.common.dto.EbookSaveDto;
 import com.objectsky.wiki.common.utils.CopyUtil;
+import com.objectsky.wiki.common.utils.SnowFlake;
 import com.objectsky.wiki.common.vo.EbookVo;
 import com.objectsky.wiki.common.vo.PageVo;
 import com.objectsky.wiki.entity.Ebook;
@@ -34,6 +35,9 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
 
     @Autowired
     private EbookMapper ebookMapper;
+
+    @Autowired
+    private SnowFlake snowFlake;
 
     @Override
     public PageVo<EbookVo> ebookList(EbookQueryDto ebookDto) {
@@ -69,6 +73,7 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
         Ebook ebook = CopyUtil.copy(ebookSaveDto, Ebook.class);
         if (ObjectUtils.isEmpty(ebookSaveDto.getId())) {
             // 新增
+            ebook.setId( snowFlake.nextId()); // 雪花id
             ebookMapper.insert(ebook);
         } else {
             // 更新
