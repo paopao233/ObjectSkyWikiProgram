@@ -206,12 +206,23 @@ export default defineComponent({
 
     };
 
+    /**
+     * 点击修改保存数据
+     */
     const handleOk = () => {
       confirmLoading.value = true;
-      setTimeout(() => {
-        visible.value = false;
-        confirmLoading.value = false;
-      }, 2000);
+      axios.post('/ebook/save', ebook.value).then((res) => {
+        const data = res.data;
+        if(data.success){
+          visible.value = false;
+          confirmLoading.value = false;
+          // 重新加载列表
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize
+          });
+        }
+      })
     };
 
     onMounted(() => {
