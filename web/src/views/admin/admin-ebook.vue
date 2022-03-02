@@ -62,7 +62,7 @@
         </template>
         <template v-slot:action="{text,record}">
           <a-space size="small">
-            <a-button type="primary" @click="edit">
+            <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
             <a-button type="danger">
@@ -74,14 +74,40 @@
     </a-layout-content>
   </a-layout>
 
-<!-- vue2的template下只能有一个节点，但是vue3是支持多个节点的 -->
+  <!-- vue2的template下只能有一个节点，但是vue3是支持多个节点的 -->
   <a-modal
       title="电子书表单"
       v-model:visible="visible"
       :confirm-loading="confirmLoading"
       @ok="handleOk"
   >
-    <p>{{ modalText }}</p>
+    <!--  ebook这里是新的响应式  -->
+    <a-form :model="ebook" :label-col="{span: 6}" :wrapper-col="wrapperCol">
+      <a-form-item label="封面">
+        <a-input v-model:value="ebook.cover"/>
+      </a-form-item>
+      <a-form-item label="名称">
+        <a-input v-model:value="ebook.name"/>
+      </a-form-item>
+      <a-form-item label="分类一">
+        <a-input v-model:value="ebook.category1Id"/>
+      </a-form-item>
+      <a-form-item label="分类二">
+        <a-input v-model:value="ebook.category2Id"/>
+      </a-form-item>
+      <a-form-item label="文档数">
+        <a-input v-model:value="ebook.docCount"/>
+      </a-form-item>
+      <a-form-item label="阅读数">
+        <a-input v-model:value="ebook.viewCount"/>
+      </a-form-item>
+      <a-form-item label="点赞数">
+        <a-input v-model:value="ebook.voteCount"/>
+      </a-form-item>
+
+
+    </a-form>
+
   </a-modal>
 </template>
 
@@ -170,16 +196,17 @@ export default defineComponent({
     };
 
     // -------- 表单 ---------
-    const modalText = ref<string>('Content of the modal');
+    const ebook = ref({});
     const visible = ref<boolean>(false);
     const confirmLoading = ref<boolean>(false);
 
-    const edit = () => {
+    const edit = (record: any) => {
       visible.value = true;
+      ebook.value = record; // 响应式的变量都是得用value
+
     };
 
     const handleOk = () => {
-      modalText.value = 'The modal will be closed after two seconds';
       confirmLoading.value = true;
       setTimeout(() => {
         visible.value = false;
@@ -196,17 +223,22 @@ export default defineComponent({
 
     return {
       //--- 方法内调用的不需要return
+
       ebooks,
+      // table list
       pagination,
       columns,
       loading,
       handleTableChange,
 
-      modalText,
+      // modal
       visible,
       confirmLoading,
       edit,
       handleOk,
+
+      // form
+      ebook,
     }
   }
 });
