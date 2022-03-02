@@ -39,6 +39,9 @@ public class EbookController {
         PageVo<EbookVo> list = ebookService.ebookList(ebookDto);
 
         // is empty?
+        if (list.getList().isEmpty()){
+            resp.setSuccess(false);
+        }
 
         resp.setData(list);
         return resp;
