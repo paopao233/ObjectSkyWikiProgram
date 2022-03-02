@@ -43,17 +43,17 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
             wrapper.like("name", ebookDto.getName());
         }
 
-        // 查询
-        // 分页
+        // 分页查询
         PageHelper.startPage(ebookDto.getPage(), ebookDto.getSize()); // 只对遇到对第一个sql起作用
         List<Ebook> ebooksListDb = ebookMapper.selectList(wrapper);
 
-
-        // 用工具将listdb的数据复制到vo里面去
-        List<EbookVo> ebookVoList = CopyUtil.copyList(ebooksListDb, EbookVo.class);
-        PageInfo<EbookVo> pageInfo = new PageInfo<>(ebookVoList);
-        LOG.info("总行：{}", pageInfo.getTotal());
+        // 获取分页信息
+        PageInfo<Ebook> pageInfo = new PageInfo<>(ebooksListDb);
+        LOG.info("总行数：{}", pageInfo.getTotal());
         LOG.info("总页数：{}", pageInfo.getPages());
+
+        // 列表复制, 用工具将listdb的数据复制到vo里面去
+        List<EbookVo> ebookVoList = CopyUtil.copyList(ebooksListDb, EbookVo.class);
 
         // 设置分页vo
         PageVo<EbookVo> pageVo = new PageVo<>();

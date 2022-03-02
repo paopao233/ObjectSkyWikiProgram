@@ -14,6 +14,7 @@ import com.objectsky.wiki.entity.Ebook;
  * @author ale
  * @since 2022-02-25
  */
+
 public interface EbookService extends IService<Ebook> {
     PageVo<EbookVo> ebookList(EbookDto ebookDto);
 
