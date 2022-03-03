@@ -17,15 +17,21 @@ import com.objectsky.wiki.entity.Category;
  */
 public interface CategoryService extends IService<Category> {
     /**
-     * 电子书列表
+     * 分类列表
      * @param categoryDto
      * @return
      */
     PageVo<CategoryQueryVo> categoryList(CategoryQueryDto categoryDto);
 
     /**
-     * 电子书保存
+     * 分类保存
      * @param categorySaveDto
      */
     void categorySaveById(CategorySaveDto categorySaveDto);
+
+    /**
+     * 分类删除
+     * @param id
+     */
+    int categoryDeleteById(Long id);
 }

@@ -85,7 +85,7 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
     public int ebookDeleteById(Long id) {
         int count = ebookMapper.deleteById(id);
         if (count == 0) {
-            LOG.info("delete id:{}", id);
+
             // TODO to do something
         }
         return count;

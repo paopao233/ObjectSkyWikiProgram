@@ -8,10 +8,7 @@ import com.objectsky.wiki.common.vo.CategoryQueryVo;
 import com.objectsky.wiki.common.vo.PageVo;
 import com.objectsky.wiki.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -28,8 +25,8 @@ public class CategoryController {
     private CategoryService categoryService;
 
     /**
-     * 电子书列表页
-     * @param CategoryQueryVo
+     * 分类列表页
+     * @param categoryDto
      * @return
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -48,7 +45,7 @@ public class CategoryController {
     }
 
     /**
-     * 保存电子书
+     * 保存分类
      * @param categoryDto
      * @return
      */
@@ -62,4 +59,23 @@ public class CategoryController {
         return resp;
     }
 
+
+
+    /**
+     * 删除分类
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
+    public CommonResp categoryDeleteById(@PathVariable Long id) {
+        CommonResp<Object> resp = new CommonResp<>();
+        int count = categoryService.categoryDeleteById(id);
+
+        // if delete not working
+        if (count == 0){
+            resp.setSuccess(false);
+        }
+
+        return resp;
+    }
 }

@@ -18,6 +18,7 @@ import java.util.List;
  * @ProjectName Demo
  * @Description 与前端交互时对实体类中Long类型的ID字段序列号
  * @time 2021/6/23 11:30
+ * https://blog.csdn.net/qq_35159279/article/details/120013338
  */
 @Configuration
 public class CustomFastJsonHttpMessageConverter {

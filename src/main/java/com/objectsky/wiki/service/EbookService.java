@@ -31,7 +31,7 @@ public interface EbookService extends IService<Ebook> {
     void ebookSaveById(EbookSaveDto ebookSaveDto);
 
     /**
-     * 电子书保存
+     * 电子书删除
      * @param id
      */
     int ebookDeleteById(Long id);

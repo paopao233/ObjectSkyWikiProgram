@@ -77,4 +77,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
             categoryMapper.updateById(category);
         }
     }
+
+    @Override
+    public int categoryDeleteById(Long id) {
+        int count = categoryMapper.deleteById(id);
+        if (count == 0) {
+
+            // TODO to do something
+        }
+        return count;
+    }
 }
