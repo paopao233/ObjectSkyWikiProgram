@@ -1,5 +1,8 @@
 package com.objectsky.wiki.common.resp;
 
+import lombok.Data;
+
+@Data
 public class CommonResp<T> {
 
     /**
@@ -17,37 +20,51 @@ public class CommonResp<T> {
      */
     private T data;
 
-    public boolean getSuccess() {
-        return success;
+    /**
+     * 返回成功结果  返回信息 和返回数据（任意格式）
+     * @param message
+     * @param data
+     * @return
+     * @Author lele
+     */
+    public static CommonResp success(String message, Object data) {
+        CommonResp result = new CommonResp();
+        result.setMessage(message);
+        result.setData(data);
+        return result;
     }
 
-    public void setSuccess(boolean success) {
-        this.success = success;
+    /**
+     * 返回成功结果 但是固定了信息 只能传入一个object的data
+     * @param data
+     * @return
+     * @Author lele
+     */
+    public static CommonResp success(Object data) {
+        return success("success", data);
     }
 
-    public String getMessage() {
-        return message;
+    /**
+     * 返回失败结果 返回信息 和返回数据（任意格式）
+     * @param message
+     * @param data
+     * @return
+     * @Author lele
+     */
+    public static CommonResp fail(String message, Object data) {
+        CommonResp result = new CommonResp();
+        result.setMessage(message);
+        result.setData(data);
+        return result;
+    }
+    /**
+     * 返回失败结果 只能传入返回信息 默认data为null
+     * @param message
+     * @return
+     * @Author lele
+     */
+    public static CommonResp fail(String message) {
+        return fail(message, null);
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer("ResponseDto{");
-        sb.append("success=").append(success);
-        sb.append(", message='").append(message).append('\'');
-        sb.append(", data=").append(data);
-        sb.append('}');
-        return sb.toString();
-    }
 }
