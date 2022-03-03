@@ -67,9 +67,18 @@
             <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
-            <a-button type="danger" @click="deleteHandle(record.id)">
-              删除
-            </a-button>
+            <a-popconfirm
+                title="你确定要删除吗？该操作不可逆。"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="deleteHandle(record.id)"
+                @cancel="deleteCancel"
+            >
+              <a-button type="danger" >
+                删除
+              </a-button>
+            </a-popconfirm>
+
           </a-space>
         </template>
       </a-table>
@@ -94,7 +103,6 @@
       <a-form-item label="排序">
         <a-input v-model:value="category.sort"/>
       </a-form-item>
-
 
 
     </a-form>
@@ -233,6 +241,15 @@ export default defineComponent({
       })
     };
 
+
+    /**
+     * 取消删除
+     * @param e
+     */
+    const deleteCancel = (e: MouseEvent) => {
+      console.log(e);
+    };
+
     onMounted(() => {
       handleQuery({
         page: 1,
@@ -264,6 +281,7 @@ export default defineComponent({
 
       // delete
       deleteHandle,
+      deleteCancel,
     }
   }
 });
