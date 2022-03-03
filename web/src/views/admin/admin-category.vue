@@ -67,7 +67,7 @@
             <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
-            <a-button type="danger">
+            <a-button type="danger" @click="deleteHandle(record.id)">
               删除
             </a-button>
           </a-space>
@@ -190,6 +190,23 @@ export default defineComponent({
     };
 
     /**
+     * 删除
+     * @param record
+     */
+    const deleteHandle = (id: number) => {
+      axios.post('/ebook/delete/' + id).then((res) => {
+        const data = res.data;
+        if (data.success) {
+          // 重新加载列表
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize
+          });
+        }
+      });
+    };
+
+    /**
      * 新增
      */
     const add = () => {
@@ -243,7 +260,10 @@ export default defineComponent({
       category,
 
       // add
-      add
+      add,
+
+      // delete
+      deleteHandle,
     }
   }
 });

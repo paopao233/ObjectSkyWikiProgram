@@ -220,7 +220,7 @@ export default defineComponent({
     };
 
     /**
-     * 编辑
+     * 删除
      * @param record
      */
     const deleteHandle = (id: number) => {
