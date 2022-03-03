@@ -72,7 +72,6 @@
                 ok-text="确定"
                 cancel-text="取消"
                 @confirm="deleteHandle(record.id)"
-                @cancel="deleteCancel"
             >
               <a-button type="danger" >
                 删除
@@ -114,6 +113,7 @@
 <script lang="ts">
 import axios from 'axios';
 import {defineComponent, onMounted, ref} from 'vue';
+import {message} from "ant-design-vue";
 
 export default defineComponent({
 
@@ -164,10 +164,14 @@ export default defineComponent({
       ).then((res) => {
         loading.value = false;
         const data = res.data;
-        categorys.value = data.data.list;
-        // 重置分页按钮
-        pagination.value.current = params.page;
-        pagination.value.total = data.data.total;
+        if (data.success) {
+          categorys.value = data.data.list;
+          // 重置分页按钮
+          pagination.value.current = params.page;
+          pagination.value.total = data.data.total;
+        } else {
+          message.error(data.message);
+        }
       });
     };
 
@@ -202,7 +206,7 @@ export default defineComponent({
      * @param record
      */
     const deleteHandle = (id: number) => {
-      axios.post('/ebook/delete/' + id).then((res) => {
+      axios.post('/category/delete/' + id).then((res) => {
         const data = res.data;
         if (data.success) {
           // 重新加载列表
@@ -242,14 +246,6 @@ export default defineComponent({
     };
 
 
-    /**
-     * 取消删除
-     * @param e
-     */
-    const deleteCancel = (e: MouseEvent) => {
-      console.log(e);
-    };
-
     onMounted(() => {
       handleQuery({
         page: 1,
@@ -281,7 +277,6 @@ export default defineComponent({
 
       // delete
       deleteHandle,
-      deleteCancel,
     }
   }
 });

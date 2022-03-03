@@ -51,8 +51,9 @@ public class CommonResp<T> {
      * @return
      * @Author lele
      */
-    public static CommonResp fail(String message, Object data) {
+    public static CommonResp fail(Boolean success,String message, Object data) {
         CommonResp result = new CommonResp();
+        result.setSuccess(false);
         result.setMessage(message);
         result.setData(data);
         return result;
@@ -64,7 +65,7 @@ public class CommonResp<T> {
      * @Author lele
      */
     public static CommonResp fail(String message) {
-        return fail(message, null);
+        return fail(false,message, null);
     }
 
 }

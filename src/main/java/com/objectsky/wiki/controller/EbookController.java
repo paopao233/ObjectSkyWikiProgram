@@ -10,6 +10,8 @@ import com.objectsky.wiki.service.EbookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  * <p>
  * 前端控制器
@@ -30,7 +32,7 @@ public class EbookController {
      * @return
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public CommonResp ebookList(EbookQueryDto ebookDto) {
+    public CommonResp ebookList(@Valid EbookQueryDto ebookDto) {
         CommonResp<PageVo<EbookQueryVo>> resp = new CommonResp<>();
 
         PageVo<EbookQueryVo> list = ebookService.ebookList(ebookDto);

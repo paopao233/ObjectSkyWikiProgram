@@ -72,11 +72,10 @@
                 ok-text="确定"
                 cancel-text="取消"
                 @confirm="deleteHandle(record.id)"
-                @cancel="deleteCancel"
             >
-            <a-button type="danger" >
-              删除
-            </a-button>
+              <a-button type="danger">
+                删除
+              </a-button>
             </a-popconfirm>
           </a-space>
         </template>
@@ -127,6 +126,7 @@
 <script lang="ts">
 import axios from 'axios';
 import {defineComponent, onMounted, ref} from 'vue';
+import {message} from 'ant-design-vue'
 
 export default defineComponent({
 
@@ -193,11 +193,15 @@ export default defineComponent({
       ).then((res) => {
         loading.value = false;
         const data = res.data;
-        ebooks.value = data.data.list;
 
-        // 重置分页按钮
-        pagination.value.current = params.page;
-        pagination.value.total = data.data.total;
+        if (data.success) {
+          ebooks.value = data.data.list;
+          // 重置分页按钮
+          pagination.value.current = params.page;
+          pagination.value.total = data.data.total;
+        } else {
+          message.error(data.message);
+        }
       });
     };
 
@@ -235,11 +239,14 @@ export default defineComponent({
       axios.post('/ebook/delete/' + id).then((res) => {
         const data = res.data;
         if (data.success) {
+          message.success("删除成功～");
           // 重新加载列表
           handleQuery({
             page: pagination.value.current,
             size: pagination.value.pageSize
           });
+        } else {
+          message.error(data.message);
         }
       });
     };
@@ -271,13 +278,6 @@ export default defineComponent({
       })
     };
 
-    /**
-     * 取消删除
-     * @param e
-     */
-    const deleteCancel = (e: MouseEvent) => {
-      console.log(e);
-    };
 
     onMounted(() => {
       handleQuery({
@@ -310,7 +310,6 @@ export default defineComponent({
 
       // delete
       deleteHandle,
-      deleteCancel,
     }
   }
 });

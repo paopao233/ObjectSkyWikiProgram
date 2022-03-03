@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
      * @param e
      * @return
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = RuntimeException.class)
     public CommonResp handler(RuntimeException e) {
         log.error("运行时异常：--------------{}", e);
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
      * @param e
      * @return
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = BindException.class)
     public CommonResp BindExceptionHandler(BindException e) {
         log.error("实体校验异常：--------------{}", e);
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
      * @param e
      * @return
      */
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public CommonResp MethodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
         log.error("实体校验异常：--------------{}", e);
