@@ -67,7 +67,7 @@
             <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
-            <a-button type="danger">
+            <a-button type="danger" @click="deleteHandle(record.id)">
               删除
             </a-button>
           </a-space>
@@ -106,7 +106,9 @@
       <a-form-item label="点赞数">
         <a-input v-model:value="ebook.voteCount"/>
       </a-form-item>
-
+      <a-form-item label="描述">
+        <a-input v-model:value="ebook.description"/>
+      </a-form-item>
 
     </a-form>
 
@@ -157,8 +159,12 @@ export default defineComponent({
         dataIndex: 'voteCount'
       },
       {
-        title: 'Action',
-        key: '操作',
+        title: '描述',
+        dataIndex: 'description'
+      },
+      {
+        title: '操作',
+        key: 'action',
         slots: {customRender: 'action'}
       }
     ];
@@ -180,6 +186,7 @@ export default defineComponent({
         loading.value = false;
         const data = res.data;
         ebooks.value = data.data.list;
+
         // 重置分页按钮
         pagination.value.current = params.page;
         pagination.value.total = data.data.total;
@@ -190,7 +197,7 @@ export default defineComponent({
      * 表格点击页码时触发
      */
     const handleTableChange = (pagination: any) => {
-      console.log("看看自带的分页参数都有啥：" + pagination);
+      // console.log("看看自带的分页参数都有啥：" + pagination);
       handleQuery({
         page: pagination.current,
         size: pagination.pageSize
@@ -209,7 +216,24 @@ export default defineComponent({
     const edit = (record: any) => {
       visible.value = true;
       ebook.value = record; // 响应式的变量都是得用value
+      console.log(ebook.value);
+    };
 
+    /**
+     * 编辑
+     * @param record
+     */
+    const deleteHandle = (id: number) => {
+      axios.post('/ebook/delete/' + id).then((res) => {
+        const data = res.data;
+        if (data.success) {
+          // 重新加载列表
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize
+          });
+        }
+      });
     };
 
     /**
@@ -266,7 +290,10 @@ export default defineComponent({
       ebook,
 
       // add
-      add
+      add,
+
+      // delete
+      deleteHandle,
     }
   }
 });
