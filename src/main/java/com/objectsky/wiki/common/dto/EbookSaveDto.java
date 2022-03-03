@@ -3,6 +3,7 @@ package com.objectsky.wiki.common.dto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -17,8 +18,6 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 public class EbookSaveDto implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     /**
      * id
      */
@@ -27,6 +26,7 @@ public class EbookSaveDto implements Serializable {
     /**
      * 名称
      */
+    @NotNull(message = "【名称不能为空】")
     private String name;
 
     /**

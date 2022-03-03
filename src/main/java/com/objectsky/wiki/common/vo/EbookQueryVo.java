@@ -10,9 +10,10 @@ import lombok.Data;
  * @Modified By:
  */
 @Data
-public class EbookVo  {
+public class EbookQueryVo {
+
     /**
-     * 分类2
+     * id
      */
     private Long id;
 

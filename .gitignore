@@ -46,3 +46,4 @@ Thumbs.db
 *.iml
 *.ipr
 /.log/
+/.idea/

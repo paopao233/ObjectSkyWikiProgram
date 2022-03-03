@@ -9,7 +9,7 @@ import com.objectsky.wiki.common.dto.EbookQueryDto;
 import com.objectsky.wiki.common.dto.EbookSaveDto;
 import com.objectsky.wiki.common.utils.CopyUtil;
 import com.objectsky.wiki.common.utils.SnowFlake;
-import com.objectsky.wiki.common.vo.EbookVo;
+import com.objectsky.wiki.common.vo.EbookQueryVo;
 import com.objectsky.wiki.common.vo.PageVo;
 import com.objectsky.wiki.entity.Ebook;
 import com.objectsky.wiki.mapper.EbookMapper;
@@ -40,7 +40,7 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
     private SnowFlake snowFlake;
 
     @Override
-    public PageVo<EbookVo> ebookList(EbookQueryDto ebookDto) {
+    public PageVo<EbookQueryVo> ebookList(EbookQueryDto ebookDto) {
 
         // 条件
         QueryWrapper<Ebook> wrapper = new QueryWrapper<>();
@@ -58,10 +58,10 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
         LOG.info("总页数：{}", pageInfo.getPages());
 
         // 列表复制, 用工具将listdb的数据复制到vo里面去
-        List<EbookVo> ebookVoList = CopyUtil.copyList(ebooksListDb, EbookVo.class);
+        List<EbookQueryVo> ebookVoList = CopyUtil.copyList(ebooksListDb, EbookQueryVo.class);
 
         // 设置分页vo
-        PageVo<EbookVo> pageVo = new PageVo<>();
+        PageVo<EbookQueryVo> pageVo = new PageVo<>();
         pageVo.setTotal(pageInfo.getTotal());
         pageVo.setList(ebookVoList);
 
@@ -73,11 +73,21 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
         Ebook ebook = CopyUtil.copy(ebookSaveDto, Ebook.class);
         if (ObjectUtils.isEmpty(ebookSaveDto.getId())) {
             // 新增
-            ebook.setId( snowFlake.nextId()); // 雪花id
+            ebook.setId(snowFlake.nextId()); // 雪花id
             ebookMapper.insert(ebook);
         } else {
             // 更新
             ebookMapper.updateById(ebook);
         }
+    }
+
+    @Override
+    public int ebookDeleteById(Long id) {
+        int count = ebookMapper.deleteById(id);
+        if (count == 0) {
+            LOG.info("delete id:{}", id);
+            // TODO to do something
+        }
+        return count;
     }
 }

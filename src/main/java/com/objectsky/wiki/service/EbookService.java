@@ -3,7 +3,7 @@ package com.objectsky.wiki.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.objectsky.wiki.common.dto.EbookQueryDto;
 import com.objectsky.wiki.common.dto.EbookSaveDto;
-import com.objectsky.wiki.common.vo.EbookVo;
+import com.objectsky.wiki.common.vo.EbookQueryVo;
 import com.objectsky.wiki.common.vo.PageVo;
 import com.objectsky.wiki.entity.Ebook;
 
@@ -22,11 +22,17 @@ public interface EbookService extends IService<Ebook> {
      * @param ebookDto
      * @return
      */
-    PageVo<EbookVo> ebookList(EbookQueryDto ebookDto);
+    PageVo<EbookQueryVo> ebookList(EbookQueryDto ebookDto);
 
     /**
      * 电子书保存
      * @param ebookSaveDto
      */
     void ebookSaveById(EbookSaveDto ebookSaveDto);
+
+    /**
+     * 电子书保存
+     * @param id
+     */
+    int ebookDeleteById(Long id);
 }

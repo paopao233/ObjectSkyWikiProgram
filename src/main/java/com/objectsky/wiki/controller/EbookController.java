@@ -4,14 +4,11 @@ package com.objectsky.wiki.controller;
 import com.objectsky.wiki.common.dto.EbookQueryDto;
 import com.objectsky.wiki.common.dto.EbookSaveDto;
 import com.objectsky.wiki.common.resp.CommonResp;
-import com.objectsky.wiki.common.vo.EbookVo;
+import com.objectsky.wiki.common.vo.EbookQueryVo;
 import com.objectsky.wiki.common.vo.PageVo;
 import com.objectsky.wiki.service.EbookService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -34,9 +31,9 @@ public class EbookController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public CommonResp ebookList(EbookQueryDto ebookDto) {
-        CommonResp<PageVo<EbookVo>> resp = new CommonResp<>();
+        CommonResp<PageVo<EbookQueryVo>> resp = new CommonResp<>();
 
-        PageVo<EbookVo> list = ebookService.ebookList(ebookDto);
+        PageVo<EbookQueryVo> list = ebookService.ebookList(ebookDto);
 
         // is empty?
         if (list.getList().isEmpty()){
@@ -58,6 +55,24 @@ public class EbookController {
         // 实例化一个结果集
         CommonResp<Object> resp = new CommonResp<>();
         ebookService.ebookSaveById(ebookDto);
+
+        return resp;
+    }
+
+    /**
+     * 删除电子书
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
+    public CommonResp ebookDeleteById(@PathVariable Long id) {
+        CommonResp<Object> resp = new CommonResp<>();
+        int count = ebookService.ebookDeleteById(id);
+
+        // delete not working
+        if (count == 0){
+            resp.setSuccess(false);
+        }
 
         return resp;
     }
