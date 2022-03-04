@@ -238,7 +238,8 @@ export default defineComponent({
      */
     const edit = (record: any) => {
       visible.value = true;
-      ebook.value = record; // 响应式的变量都是得用value; 如果把值直接给ebook 会有响应式问题
+      // ebook.value = record; // 响应式的变量都是得用value;
+      // 如果把值直接给ebook 会有响应式问题；因为改动时，改的是record 所以 record的值也会更着改变
       ebook.value = Tool.copy(record);
       // console.log(ebook.value);
     };

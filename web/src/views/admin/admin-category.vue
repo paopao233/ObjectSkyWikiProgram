@@ -122,6 +122,7 @@
 import axios from 'axios';
 import {defineComponent, onMounted, ref} from 'vue';
 import {message} from "ant-design-vue";
+import {Tool} from "@/util/tool";
 
 export default defineComponent({
 
@@ -207,8 +208,8 @@ export default defineComponent({
      */
     const edit = (record: any) => {
       visible.value = true;
-      category.value = record; // 响应式的变量都是得用value
-
+      // category.value = record; // 响应式的变量都是得用value ； 如果把值直接给category 会有响应式问题
+      category.value = Tool.copy(record);
     };
 
     /**
