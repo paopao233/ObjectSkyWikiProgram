@@ -45,7 +45,8 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
         // 条件
         QueryWrapper<Ebook> wrapper = new QueryWrapper<>();
         if (!ObjectUtils.isEmpty(ebookDto.getName())) {
-            wrapper.like("name", ebookDto.getName());
+            String name = ebookDto.getName().trim();
+            wrapper.like("name", name);
         }
 
         // 分页查询
@@ -56,6 +57,10 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
         PageInfo<Ebook> pageInfo = new PageInfo<>(ebooksListDb);
         LOG.info("总行数：{}", pageInfo.getTotal());
         LOG.info("总页数：{}", pageInfo.getPages());
+
+        if (pageInfo.getTotal() == 0){
+            throw new RuntimeException("查找不到你要的电子书哦～");
+        }
 
         // 列表复制, 用工具将listdb的数据复制到vo里面去
         List<EbookQueryVo> ebookVoList = CopyUtil.copyList(ebooksListDb, EbookQueryVo.class);
@@ -84,10 +89,6 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
     @Override
     public int ebookDeleteById(Long id) {
         int count = ebookMapper.deleteById(id);
-        if (count == 0) {
-
-            // TODO to do something
-        }
         return count;
     }
 }
