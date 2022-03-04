@@ -11,5 +11,13 @@ import lombok.Data;
  */
 @Data
 public class CategoryQueryDto extends PageDto{
+    /**
+     * id
+     */
+    private Long id;
 
+    /**
+     * 名称
+     */
+    private String name;
 }

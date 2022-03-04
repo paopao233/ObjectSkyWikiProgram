@@ -50,8 +50,8 @@
       <a-input-search
           v-model:value="value"
           placeholder="请输入要查询的名称"
-          enter-button="Search"
-          style="width: 400px;margin-right: 20px"
+          enter-button="搜索"
+          style="width: 400px;margin-right: 10px"
           @search="onSearch"
           size="large"
       />
@@ -181,7 +181,14 @@ export default defineComponent({
           pagination.value.current = params.page;
           pagination.value.total = data.data.total;
         } else {
-          message.error(data.message);
+          if (data.message == "查询后列表为空，请检查参数") {
+            handleQuery({
+              page: params.page - 1,
+              size: params.size,
+            });
+          } else {
+            message.error(data.message);
+          }
         }
       });
     };
@@ -190,7 +197,7 @@ export default defineComponent({
      * 表格点击页码时触发
      */
     const handleTableChange = (pagination: any) => {
-      console.log("看看自带的分页参数都有啥：" + pagination);
+      // console.log("看看自带的分页参数都有啥：" + pagination);
       handleQuery({
         page: pagination.current,
         size: pagination.pageSize
@@ -255,7 +262,7 @@ export default defineComponent({
             page: pagination.value.current,
             size: pagination.value.pageSize
           });
-          message.success("信息修改成功～");
+          message.success("信息保存成功～");
         } else {
           message.error(data.message);
           confirmLoading.value = false;

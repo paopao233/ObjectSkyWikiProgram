@@ -45,14 +45,29 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         // 条件
         QueryWrapper<Category> wrapper = new QueryWrapper<>();
 
+        // 如果用户输入的全是空格 那么就会默认自动查询所有列表
+        if (!ObjectUtils.isEmpty(categoryDto.getName()) && !"list".equals(categoryDto.getName())) {
+            String name = categoryDto.getName().trim();
+            wrapper.like("name", name);
+        }
+
         // 分页查询
         PageHelper.startPage(categoryDto.getPage(), categoryDto.getSize()); // 只对遇到对第一个sql起作用
         List<Category> categorysListDb = categoryMapper.selectList(wrapper);
+
+        // 处理查询出来是空的
+        if (categorysListDb.size() == 0){
+            throw new RuntimeException("查询后列表为空，请检查参数");
+        }
 
         // 获取分页信息
         PageInfo<Category> pageInfo = new PageInfo<>(categorysListDb);
         LOG.info("总行数：{}", pageInfo.getTotal());
         LOG.info("总页数：{}", pageInfo.getPages());
+
+        if (pageInfo.getTotal() == 0){
+            throw new RuntimeException("查找不到你要的分类哦～");
+        }
 
         // 列表复制, 用工具将listdb的数据复制到vo里面去
         List<CategoryQueryVo> categoryVoList = CopyUtil.copyList(categorysListDb, CategoryQueryVo.class);

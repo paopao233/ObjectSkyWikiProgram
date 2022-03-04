@@ -73,6 +73,7 @@ public class EbookController {
 
         // delete not working
         if (count == 0){
+            resp.setMessage("不存在要删除的电子书！");
             resp.setSuccess(false);
         }
 

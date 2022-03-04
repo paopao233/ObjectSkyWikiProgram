@@ -50,8 +50,8 @@
       <a-input-search
           v-model:value="value"
           placeholder="请输入要查询的名称"
-          enter-button="Search"
-          style="width: 400px;margin-right: 20px"
+          enter-button="搜索"
+          style="width: 400px;margin-right: 10px"
           @search="onSearch"
           size="large"
       />
@@ -198,7 +198,7 @@ export default defineComponent({
             params: {
               page: params.page,
               size: params.size,
-              name: params.name ? params.name : '',
+              name: params.name ? params.name : "list",
             }
           }
       ).then((res) => {
@@ -211,7 +211,15 @@ export default defineComponent({
           pagination.value.current = params.page;
           pagination.value.total = data.data.total;
         } else {
-          message.error(data.message);
+          if (data.message == "查询后列表为空，请检查参数") {
+            handleQuery({
+              page: params.page - 1,
+              size: params.size,
+            });
+          } else {
+            message.error(data.message);
+          }
+
         }
       });
     };
@@ -288,7 +296,7 @@ export default defineComponent({
             size: pagination.value.pageSize
           });
           // message
-          message.success("信息修改成功～");
+          message.success("信息保存成功～");
         } else {
           message.error(data.message);
           confirmLoading.value = false;

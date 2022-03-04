@@ -77,6 +77,7 @@ public class CategoryController {
 
         // if delete not working
         if (count == 0) {
+            resp.setMessage("不存在要删除的分类！");
             resp.setSuccess(false);
         }
 

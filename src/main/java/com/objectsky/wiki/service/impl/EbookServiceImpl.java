@@ -44,7 +44,9 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
 
         // 条件
         QueryWrapper<Ebook> wrapper = new QueryWrapper<>();
-        if (!ObjectUtils.isEmpty(ebookDto.getName())) {
+
+        // 如果用户输入的全是空格 那么就会默认自动查询所有列表
+        if (!ObjectUtils.isEmpty(ebookDto.getName()) && !"list".equals(ebookDto.getName())) {
             String name = ebookDto.getName().trim();
             wrapper.like("name", name);
         }
@@ -52,6 +54,11 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
         // 分页查询
         PageHelper.startPage(ebookDto.getPage(), ebookDto.getSize()); // 只对遇到对第一个sql起作用
         List<Ebook> ebooksListDb = ebookMapper.selectList(wrapper);
+
+        // 处理查询出来是空的
+        if (ebooksListDb.size() == 0){
+            throw new RuntimeException("查询后列表为空，请检查参数");
+        }
 
         // 获取分页信息
         PageInfo<Ebook> pageInfo = new PageInfo<>(ebooksListDb);
