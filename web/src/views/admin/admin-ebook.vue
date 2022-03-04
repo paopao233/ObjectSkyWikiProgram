@@ -228,7 +228,7 @@ export default defineComponent({
     const edit = (record: any) => {
       visible.value = true;
       ebook.value = record; // 响应式的变量都是得用value
-      console.log(ebook.value);
+      // console.log(ebook.value);
     };
 
     /**
@@ -274,6 +274,11 @@ export default defineComponent({
             page: pagination.value.current,
             size: pagination.value.pageSize
           });
+          // message
+          message.success("信息修改成功～");
+        } else {
+          message.error(data.message);
+          confirmLoading.value = false;
         }
       })
     };

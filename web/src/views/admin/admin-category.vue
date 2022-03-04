@@ -214,6 +214,9 @@ export default defineComponent({
             page: pagination.value.current,
             size: pagination.value.pageSize
           });
+          message.success("分类删除成功～");
+        } else {
+          message.error(data.message);
         }
       });
     };
@@ -241,6 +244,10 @@ export default defineComponent({
             page: pagination.value.current,
             size: pagination.value.pageSize
           });
+          message.success("信息修改成功～");
+        } else {
+          message.error(data.message);
+          confirmLoading.value = false;
         }
       })
     };

@@ -10,6 +10,8 @@ import com.objectsky.wiki.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  * <p>
  * 前端控制器
@@ -26,6 +28,7 @@ public class CategoryController {
 
     /**
      * 分类列表页
+     *
      * @param categoryDto
      * @return
      */
@@ -36,7 +39,7 @@ public class CategoryController {
         PageVo<CategoryQueryVo> list = categoryService.categoryList(categoryDto);
 
         // is empty?
-        if (list.getList().isEmpty()){
+        if (list.getList().isEmpty()) {
             resp.setSuccess(false);
         }
 
@@ -46,11 +49,12 @@ public class CategoryController {
 
     /**
      * 保存分类
+     *
      * @param categoryDto
      * @return
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public CommonResp categorySave(@RequestBody CategorySaveDto categoryDto) {
+    public CommonResp categorySave(@Valid @RequestBody CategorySaveDto categoryDto) {
         // RequestBody针对json格式提交的数据
         // 实例化一个结果集
         CommonResp<Object> resp = new CommonResp<>();
@@ -60,9 +64,9 @@ public class CategoryController {
     }
 
 
-
     /**
      * 删除分类
+     *
      * @param id
      * @return
      */
@@ -72,7 +76,7 @@ public class CategoryController {
         int count = categoryService.categoryDeleteById(id);
 
         // if delete not working
-        if (count == 0){
+        if (count == 0) {
             resp.setSuccess(false);
         }
 

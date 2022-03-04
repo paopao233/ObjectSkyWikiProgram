@@ -52,7 +52,7 @@ public class EbookController {
      * @return
      */
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public CommonResp ebookSave(@RequestBody EbookSaveDto ebookDto) {
+    public CommonResp ebookSave(@Valid @RequestBody EbookSaveDto ebookDto) {
         // RequestBody针对json格式提交的数据
         // 实例化一个结果集
         CommonResp<Object> resp = new CommonResp<>();
