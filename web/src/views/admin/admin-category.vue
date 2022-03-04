@@ -55,15 +55,18 @@
           @search="onSearch"
           size="large"
       />
-      <a-button type="primary" @click="add" size="large">
+      <a-button type="primary" @click="add" size="large" style="margin-right: 10px">
         新增
+      </a-button>
+      <a-button type="primary" @click="handleQuery" size="large">
+        查询所有
       </a-button>
       <!--   data-source是一个列表 会被循环   -->
       <a-table
           :dataSource="categorys"
           :columns="columns"
           :row-key="record => record.id"
-          :pagination="pagination"
+          :pagination="false"
           :loading="loading"
           @change="handleTableChange"
       >
@@ -131,11 +134,7 @@ export default defineComponent({
   setup() {
     const value = ref<string>(''); // 搜索框的值
     const categorys = ref(); // 响应式的数据：可实时刷新到界面上
-    const pagination = ref({
-      current: 1,
-      pageSize: 4,
-      total: 0
-    });
+
     const loading = ref(false);
     const columns = [
       {
@@ -159,36 +158,40 @@ export default defineComponent({
     ];
 
     /**
+     * 一级分类树，children属性就是二级分类 支持无限级
+     * [{
+     *   id: "",
+     *   name: "",
+     *   children: [{
+     *     id: "",
+     *     name: "",
+     *   }]
+     * }]
+     */
+    const level1 = ref(); // 一级分类树，children属性就是二级分类
+    // level1.value = [];
+
+    /**
      * 数据查询
      **/
     const handleQuery = (params: any) => {
       loading.value = true;
       // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
-      axios.get('/category/list', {
+      axios.get('/category/allList', {
             //params:{} 是axios固定写法 而且一般不会把整个params传入进去 都是写好要哪些
             params: {
-              page: params.page,
-              size: params.size,
-              name: params.name ? params.name : '',
+              name: params.name ? params.name : 'list',
             }
           }
       ).then((res) => {
         loading.value = false;
         const data = res.data;
         if (data.success) {
-          categorys.value = data.data.list;
-          // 重置分页按钮
-          pagination.value.current = params.page;
-          pagination.value.total = data.data.total;
+          categorys.value = data.data;
+          level1.value = [];
+          level1.value = Tool.array2Tree(categorys.value,0);// 递归 初始条件是找到父亲
         } else {
-          if (data.message == "查询后列表为空，请检查参数") {
-            handleQuery({
-              page: params.page - 1,
-              size: params.size,
-            });
-          } else {
-            message.error(data.message);
-          }
+          message.error(data.message);
         }
       });
     };
@@ -198,10 +201,7 @@ export default defineComponent({
      */
     const handleTableChange = (pagination: any) => {
       // console.log("看看自带的分页参数都有啥：" + pagination);
-      handleQuery({
-        page: pagination.current,
-        size: pagination.pageSize
-      });
+      handleQuery({});
     };
 
     // -------- 表单 ---------
@@ -228,10 +228,7 @@ export default defineComponent({
         const data = res.data;
         if (data.success) {
           // 重新加载列表
-          handleQuery({
-            page: pagination.value.current,
-            size: pagination.value.pageSize
-          });
+          handleQuery({});
           message.success("分类删除成功～");
         } else {
           message.error(data.message);
@@ -258,10 +255,7 @@ export default defineComponent({
           visible.value = false;
           confirmLoading.value = false;
           // 重新加载列表
-          handleQuery({
-            page: pagination.value.current,
-            size: pagination.value.pageSize
-          });
+          handleQuery({});
           message.success("信息保存成功～");
         } else {
           message.error(data.message);
@@ -278,8 +272,6 @@ export default defineComponent({
       searchValue = searchValue.trim();
       if (searchValue !== "") {
         handleQuery({
-          page: 1,
-          size: pagination.value.pageSize,
           name: searchValue,
         });
 
@@ -292,18 +284,14 @@ export default defineComponent({
      * 初始化函数
      */
     onMounted(() => {
-      handleQuery({
-        page: 1,
-        size: pagination.value.pageSize
-      });
+      handleQuery({});
     });
 
     return {
       //--- 方法内调用的不需要return
-
+      handleQuery,
       categorys,
       // table list
-      pagination,
       columns,
       loading,
       handleTableChange,
@@ -326,6 +314,10 @@ export default defineComponent({
       // search
       value,
       onSearch,
+
+      // table
+      level1,
+
     }
   }
 });

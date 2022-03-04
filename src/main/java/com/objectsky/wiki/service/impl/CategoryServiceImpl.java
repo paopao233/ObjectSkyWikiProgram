@@ -40,6 +40,34 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     private SnowFlake snowFlake;
 
     @Override
+    public List<CategoryQueryVo> categoryAllList(CategoryQueryDto categoryDto) {
+        // 条件
+        QueryWrapper<Category> wrapper = new QueryWrapper<>();
+
+        // 排序
+        wrapper.orderBy(true,true,"sort");
+
+        // 如果用户输入的全是空格 那么就会默认自动查询所有列表
+        if (!ObjectUtils.isEmpty(categoryDto.getName()) && !"list".equals(categoryDto.getName())) {
+            String name = categoryDto.getName().trim();
+            wrapper.like("name", name);
+        }
+
+        // 分页查询
+        List<Category> categorysListDb = categoryMapper.selectList(wrapper);
+
+        // 处理查询出来是空的
+        if (categorysListDb.size() == 0){
+            throw new RuntimeException("查询后列表为空，请检查参数");
+        }
+
+        // 列表复制, 用工具将listdb的数据复制到vo里面去
+        List<CategoryQueryVo> categoryVoList = CopyUtil.copyList(categorysListDb, CategoryQueryVo.class);
+
+        return categoryVoList;
+    }
+
+    @Override
     public PageVo<CategoryQueryVo> categoryList(CategoryQueryDto categoryDto) {
 
         // 条件

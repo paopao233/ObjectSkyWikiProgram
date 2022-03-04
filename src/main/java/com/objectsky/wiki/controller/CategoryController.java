@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * <p>
@@ -27,7 +28,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
     /**
-     * 分类列表页
+     * 分类列表页-有分页
      *
      * @param categoryDto
      * @return
@@ -38,12 +39,23 @@ public class CategoryController {
 
         PageVo<CategoryQueryVo> list = categoryService.categoryList(categoryDto);
 
-        // is empty?
-        if (list.getList().isEmpty()) {
-            resp.setSuccess(false);
-        }
-
         resp.setData(list);
+        return resp;
+    }
+
+    /**
+     * 分类列表页-无分页
+     *
+     * @param categoryDto
+     * @return
+     */
+    @RequestMapping(value = "/allList", method = RequestMethod.GET)
+    public CommonResp categoryAllList(CategoryQueryDto categoryDto) {
+        CommonResp<List<CategoryQueryVo>> resp = new CommonResp<>();
+
+        List<CategoryQueryVo> categoryQueryVoList = categoryService.categoryAllList(categoryDto);
+
+        resp.setData(categoryQueryVoList);
         return resp;
     }
 
