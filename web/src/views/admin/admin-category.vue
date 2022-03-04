@@ -47,6 +47,14 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
+      <a-input-search
+          v-model:value="value"
+          placeholder="请输入要查询的名称"
+          enter-button="Search"
+          style="width: 400px;margin-right: 20px"
+          @search="onSearch"
+          size="large"
+      />
       <a-button type="primary" @click="add" size="large">
         新增
       </a-button>
@@ -73,7 +81,7 @@
                 cancel-text="取消"
                 @confirm="deleteHandle(record.id)"
             >
-              <a-button type="danger" >
+              <a-button type="danger">
                 删除
               </a-button>
             </a-popconfirm>
@@ -120,6 +128,7 @@ export default defineComponent({
   /* setup() vue3 新增的 */
   name: 'AdminCategory',
   setup() {
+    const value = ref<string>(''); // 搜索框的值
     const categorys = ref(); // 响应式的数据：可实时刷新到界面上
     const pagination = ref({
       current: 1,
@@ -159,6 +168,7 @@ export default defineComponent({
             params: {
               page: params.page,
               size: params.size,
+              name: params.name ? params.name : '',
             }
           }
       ).then((res) => {
@@ -252,7 +262,27 @@ export default defineComponent({
       })
     };
 
+    /**
+     * onSearch
+     */
+    const onSearch = (searchValue: string) => {
+      //
+      searchValue = searchValue.trim();
+      if (searchValue !== "") {
+        handleQuery({
+          page: 1,
+          size: pagination.value.pageSize,
+          name: searchValue,
+        });
 
+      } else {
+        message.error("内容不能为空～");
+      }
+    };
+
+    /**
+     * 初始化函数
+     */
     onMounted(() => {
       handleQuery({
         page: 1,
@@ -284,6 +314,10 @@ export default defineComponent({
 
       // delete
       deleteHandle,
+
+      // search
+      value,
+      onSearch,
     }
   }
 });
