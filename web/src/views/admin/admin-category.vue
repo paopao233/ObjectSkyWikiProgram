@@ -63,7 +63,7 @@
       </a-button>
       <!--   data-source是一个列表 会被循环   -->
       <a-table
-          :dataSource="categorys"
+          :dataSource="level1"
           :columns="columns"
           :row-key="record => record.id"
           :pagination="false"
@@ -103,7 +103,7 @@
       @ok="handleOk"
   >
     <!--  category这里是新的响应式  -->
-    <a-form :model="category" :label-col="{span: 6}" :wrapper-col="wrapperCol">
+    <a-form :model="level1" :label-col="{span: 6}" :wrapper-col="wrapperCol">
       <a-form-item label="名称">
         <a-input v-model:value="category.name"/>
       </a-form-item>
@@ -169,7 +169,7 @@ export default defineComponent({
      * }]
      */
     const level1 = ref(); // 一级分类树，children属性就是二级分类
-    // level1.value = [];
+    level1.value = [];
 
     /**
      * 数据查询
@@ -188,8 +188,10 @@ export default defineComponent({
         const data = res.data;
         if (data.success) {
           categorys.value = data.data;
+
           level1.value = [];
           level1.value = Tool.array2Tree(categorys.value,0);// 递归 初始条件是找到父亲
+
         } else {
           message.error(data.message);
         }
@@ -290,7 +292,7 @@ export default defineComponent({
     return {
       //--- 方法内调用的不需要return
       handleQuery,
-      categorys,
+      // categorys,
       // table list
       columns,
       loading,
