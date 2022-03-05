@@ -5,12 +5,11 @@
       <a-menu
           mode="inline"
           :style="{ height: '100%', borderRight: 0 }"
+          @click="submenuHandleClick"
       >
         <a-menu-item key="welcome">
-          <router-link to="/">
-            <MailOutlined/>
-            <span>欢迎</span>
-          </router-link>
+          <MailOutlined/>
+          <span>欢迎</span>
         </a-menu-item>
         <a-sub-menu v-for="item in level1" :key="item.id">
           <template v-slot:title>
@@ -27,10 +26,16 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-
+      <div class="welcome" v-show="isShowWelcome">
+        <h1>欢迎使用万物天空知识库</h1>
+      </div>
       <!--   data-source是一个列表 会被循环   -->
-      <a-list item-layout="vertical" size="large" :grid="{ gutter: 20,  xs:1, sm: 2, md: 3, lg: 4, xl:4, xxl: 4}"
-              :data-source="ebooks">
+      <a-list v-show="!isShowWelcome"
+              item-layout="vertical" size="large"
+              :grid="{ gutter: 20,  xs:1, sm: 2, md: 3, lg: 4, xl:4, xxl: 4}"
+              :data-source="ebooks"
+
+      >
         <template #renderItem="{ item }">
           <a-list-item key="item.name">
             <template #actions>
@@ -73,6 +78,8 @@ export default defineComponent({
 
   /* vue3 新增的 */
   setup() {
+    const isShowWelcome = ref(true);
+
     const level1 = ref(); // 一级分类树，children属性就是二级分类
     level1.value = [];
 
@@ -111,13 +118,13 @@ export default defineComponent({
       // 查询分类列表数据
       categorysQueryHandle({}),
 
-      // 查询电子书列表数据
-      axios.get("/ebook/list").then((res) => {
-        const data = res.data;
-        ebooks.value = data.data.list;
-        // ebooks1.books = data.data;
+          // 查询电子书列表数据
+          axios.get("/ebook/list").then((res) => {
+            const data = res.data;
+            ebooks.value = data.data.list;
+            // ebooks1.books = data.data;
 
-      });
+          });
     });
 
     /**
@@ -136,6 +143,12 @@ export default defineComponent({
     ];
 
     /**
+     * 侧边栏菜单点击事件
+     */
+    const submenuHandleClick = (value: any) => {
+      isShowWelcome.value = value === "welcome";
+    }
+    /**
      * html代码要拿到响应式的变量，所以要在setup最后return出去
      */
     return {
@@ -148,6 +161,10 @@ export default defineComponent({
       //category menu
       categorysQueryHandle,
       level1,
+      submenuHandleClick,
+      isShowWelcome,
+
+
     }
   }
 })
