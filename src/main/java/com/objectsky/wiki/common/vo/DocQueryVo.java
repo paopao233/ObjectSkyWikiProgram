@@ -1,27 +1,33 @@
-package com.objectsky.wiki.common.dto;
+package com.objectsky.wiki.common.vo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
  * <p>
- * 分类
+ * 文档
  * </p>
  *
  * @author ale
- * @since 2022-03-02
+ * @since 2022-03-05
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class CategorySaveDto implements Serializable {
+public class DocQueryVo implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * id
      */
     private Long id;
+
+    /**
+     * 电子书id
+     */
+    private Long ebookId;
 
     /**
      * 父id
@@ -31,14 +37,22 @@ public class CategorySaveDto implements Serializable {
     /**
      * 名称
      */
-    @NotNull(message = "【名称】不能为空")
     private String name;
 
     /**
      * 顺序
      */
-    @NotNull(message = "【排序】不能为空】")
     private Integer sort;
+
+    /**
+     * 阅读数
+     */
+    private Integer viewCount;
+
+    /**
+     * 点赞数
+     */
+    private Integer voteCount;
 
 
 }

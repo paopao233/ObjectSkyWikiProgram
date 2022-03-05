@@ -8,20 +8,32 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 
+ * 文档
  * </p>
  *
  * @author ale
- * @since 2022-02-25
+ * @since 2022-03-05
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class EbookSaveDto implements Serializable {
+public class DocSaveDto implements Serializable {
 
     /**
      * id
      */
     private Long id;
+
+    /**
+     * 电子书id
+     */
+    @NotNull(message = "【电子书】不能为空")
+    private Long ebookId;
+
+    /**
+     * 父id
+     */
+    @NotNull(message = "【父文档不能为空】")
+    private Long parent;
 
     /**
      * 名称
@@ -30,29 +42,10 @@ public class EbookSaveDto implements Serializable {
     private String name;
 
     /**
-     * 分类1
+     * 顺序
      */
-    private Long category1Id;
-
-    /**
-     * 分类2
-     */
-    private Long category2Id;
-
-    /**
-     * 描述
-     */
-    private String description;
-
-    /**
-     * 封面
-     */
-    private String cover;
-
-    /**
-     * 文档数
-     */
-    private Integer docCount;
+    @NotNull(message = "【顺序】不能为空")
+    private Integer sort;
 
     /**
      * 阅读数
