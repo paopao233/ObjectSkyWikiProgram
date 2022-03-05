@@ -246,7 +246,7 @@ export default defineComponent({
     };
 
     /**
-     * 查询分类列表数据
+     * 查询分类列表数据 异步操作：相当于到了get方法，就重新开启一个线程去获取数据 不会等到获取数据再去执行其他方法的
      **/
     const categorysQueryHandle = (params: any) => {
       loading.value = true;
@@ -266,6 +266,12 @@ export default defineComponent({
           level1.value = [];
           level1.value = Tool.array2Tree(categorys, 0);// 递归 初始条件是找到父亲
 
+          // 查询电子书列表
+          // 加载完分类后 再加载电子书 ，否则如果分类数加载的很慢，则电子书渲染就会出错！
+          handleQuery({
+            page: 1,
+            size: pagination.value.pageSize
+          });
         } else {
           message.error(data.message);
         }
@@ -403,11 +409,6 @@ export default defineComponent({
       // 查询分类列表
       categorysQueryHandle({});
 
-      // 查询电子书列表
-      handleQuery({
-        page: 1,
-        size: pagination.value.pageSize
-      });
     });
 
     return {
