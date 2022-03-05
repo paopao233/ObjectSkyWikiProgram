@@ -106,11 +106,12 @@
       <a-form-item label="名称">
         <a-input v-model:value="ebook.name"/>
       </a-form-item>
-      <a-form-item label="分类一">
-        <a-input v-model:value="ebook.category1Id"/>
-      </a-form-item>
-      <a-form-item label="分类二">
-        <a-input v-model:value="ebook.category2Id"/>
+      <a-form-item label="分类">
+        <a-cascader
+            v-model:value="categoryIds"
+            :field-names="{label:'name',value:'id',children:'children'}"
+            :options="level1"
+        />
       </a-form-item>
       <a-form-item label="文档数">
         <a-input v-model:value="ebook.docCount"/>
@@ -188,6 +189,21 @@ export default defineComponent({
     ];
 
     /**
+     * 一级分类树，children属性就是二级分类 支持无限级
+     * [{
+     *   id: "",
+     *   name: "",
+     *   children: [{
+     *     id: "",
+     *     name: "",
+     *   }]
+     * }]
+     */
+    const level1 = ref(); // 一级分类树，children属性就是二级分类
+    level1.value = [];
+
+
+    /**
      * 数据查询
      **/
     const handleQuery = (params: any) => {
@@ -225,10 +241,38 @@ export default defineComponent({
     };
 
     /**
+     * 查询分类列表数据
+     **/
+    const categorysQueryHandle = (params: any) => {
+      loading.value = true;
+      // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
+      axios.get('/category/allList', {
+            //params:{} 是axios固定写法 而且一般不会把整个params传入进去 都是写好要哪些
+            params: {
+              name: params.name ? params.name : 'list',
+            }
+          }
+      ).then((res) => {
+        loading.value = false;
+        const data = res.data;
+        if (data.success) {
+          const categorys = data.data;
+
+          level1.value = [];
+          level1.value = Tool.array2Tree(categorys, 0);// 递归 初始条件是找到父亲
+
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
+
+    /**
      * 表格点击页码时触发
      */
     const handleTableChange = (pagination: any) => {
       // console.log("看看自带的分页参数都有啥：" + pagination);
+      // 传递页码
       handleQuery({
         page: pagination.current,
         size: pagination.pageSize
@@ -236,6 +280,10 @@ export default defineComponent({
     };
 
     // -------- 表单 ---------
+    /**
+     * 数组，[100, 101]对应：前端开发 / Vue
+     */
+    const categoryIds = ref(); // 级联
     const ebook = ref({});
     const visible = ref<boolean>(false);
     const confirmLoading = ref<boolean>(false);
@@ -250,6 +298,8 @@ export default defineComponent({
       // 如果把值直接给ebook 会有响应式问题；因为改动时，改的是record 所以 record的值也会更着改变
       ebook.value = Tool.copy(record);
       // console.log(ebook.value);
+      // 将分类的id映射出去
+      categoryIds.value = [ebooks.value.category1Id, ebooks.value.category2Id]
     };
 
     /**
@@ -278,6 +328,7 @@ export default defineComponent({
     const add = () => {
       visible.value = true;
       ebook.value = {}; // 清空ebook
+
     };
 
     /**
@@ -285,6 +336,11 @@ export default defineComponent({
      */
     const handleOk = () => {
       confirmLoading.value = true;
+      // 将分页的id保存到电子书的去
+      ebooks.value.category1Id = categoryIds.value[0];
+      ebooks.value.category2Id = categoryIds.value[1];
+
+      // 发送请求
       axios.post('/ebook/save', ebook.value).then((res) => {
         const data = res.data;
         if (data.success) {
@@ -326,6 +382,10 @@ export default defineComponent({
      * 初始化函数
      */
     onMounted(() => {
+      // 查询分类列表
+      categorysQueryHandle({});
+
+      // 查询电子书列表
       handleQuery({
         page: 1,
         size: pagination.value.pageSize
@@ -360,6 +420,11 @@ export default defineComponent({
       // search
       value,
       onSearch,
+
+      // category
+      categorysQueryHandle,
+      categoryIds,
+      level1,
     }
   }
 });
