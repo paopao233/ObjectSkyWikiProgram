@@ -70,6 +70,9 @@
         <template #cover="{text:cover}">
           <img v-if="cover" :src="cover" alt="avatar">
         </template>
+        <template v-slot:category="{text,record}">
+        <span>{{getCategoryName(record.category1Id)}} / {{getCategoryName(record.category2Id)}}</span>
+        </template>
         <template v-slot:action="{text,record}">
           <a-space size="small">
             <a-button type="primary" @click="edit(record)">
@@ -144,6 +147,7 @@ export default defineComponent({
   name: 'AdminEbook',
   setup() {
     const value = ref<string>(''); // 搜索框的值
+    const ebook = ref();
     const ebooks = ref(); // 响应式的数据：可实时刷新到界面上
     const pagination = ref({
       current: 1,
@@ -201,6 +205,7 @@ export default defineComponent({
      */
     const level1 = ref(); // 一级分类树，children属性就是二级分类
     level1.value = [];
+    let categorys: any; // 给分类显示名称用
 
 
     /**
@@ -256,7 +261,7 @@ export default defineComponent({
         loading.value = false;
         const data = res.data;
         if (data.success) {
-          const categorys = data.data;
+          categorys = data.data;
 
           level1.value = [];
           level1.value = Tool.array2Tree(categorys, 0);// 递归 初始条件是找到父亲
@@ -266,6 +271,19 @@ export default defineComponent({
         }
       });
     };
+
+    /**
+     * 通过查询category列表 拼接分类名
+     */
+    const getCategoryName = (cid: number) => {
+      let result = "";
+      categorys.forEach((item:any) =>{
+        if (item.id == cid){
+          result = item.name;
+        }
+      });
+      return result;
+    }
 
     /**
      * 表格点击页码时触发
@@ -284,7 +302,7 @@ export default defineComponent({
      * 数组，[100, 101]对应：前端开发 / Vue
      */
     const categoryIds = ref(); // 级联
-    const ebook = ref({});
+    // const ebook = ref({});
     const visible = ref<boolean>(false);
     const confirmLoading = ref<boolean>(false);
 
@@ -299,7 +317,7 @@ export default defineComponent({
       ebook.value = Tool.copy(record);
       // console.log(ebook.value);
       // 将分类的id映射出去
-      categoryIds.value = [ebooks.value.category1Id, ebooks.value.category2Id]
+      categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]
     };
 
     /**
@@ -337,8 +355,8 @@ export default defineComponent({
     const handleOk = () => {
       confirmLoading.value = true;
       // 将分页的id保存到电子书的去
-      ebooks.value.category1Id = categoryIds.value[0];
-      ebooks.value.category2Id = categoryIds.value[1];
+      ebook.value.category1Id = categoryIds.value[0];
+      ebook.value.category2Id = categoryIds.value[1];
 
       // 发送请求
       axios.post('/ebook/save', ebook.value).then((res) => {
@@ -425,6 +443,7 @@ export default defineComponent({
       categorysQueryHandle,
       categoryIds,
       level1,
+      getCategoryName,
     }
   }
 });

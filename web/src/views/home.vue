@@ -6,42 +6,22 @@
           mode="inline"
           :style="{ height: '100%', borderRight: 0 }"
       >
-        <a-sub-menu key="sub1">
-          <template #title>
+        <a-menu-item key="welcome">
+          <router-link to="/">
+            <MailOutlined/>
+            <span>欢迎</span>
+          </router-link>
+        </a-menu-item>
+        <a-sub-menu v-for="item in level1" :key="item.id">
+          <template v-slot:title>
               <span>
                 <user-outlined/>
-                subnav 1
+                {{ item.name }}
               </span>
           </template>
-          <a-menu-item key="1">option1</a-menu-item>
-          <a-menu-item key="2">option2</a-menu-item>
-          <a-menu-item key="3">option3</a-menu-item>
-          <a-menu-item key="4">option4</a-menu-item>
+          <a-menu-item v-for="child in item.children" :key="child.id">{{ child.name }}</a-menu-item>
         </a-sub-menu>
-        <a-sub-menu key="sub2">
-          <template #title>
-              <span>
-                <laptop-outlined/>
-                subnav 2
-              </span>
-          </template>
-          <a-menu-item key="5">option5</a-menu-item>
-          <a-menu-item key="6">option6</a-menu-item>
-          <a-menu-item key="7">option7</a-menu-item>
-          <a-menu-item key="8">option8</a-menu-item>
-        </a-sub-menu>
-        <a-sub-menu key="sub3">
-          <template #title>
-              <span>
-                <notification-outlined/>
-                subnav 3
-              </span>
-          </template>
-          <a-menu-item key="9">option9</a-menu-item>
-          <a-menu-item key="10">option10</a-menu-item>
-          <a-menu-item key="11">option11</a-menu-item>
-          <a-menu-item key="12">option12</a-menu-item>
-        </a-sub-menu>
+
       </a-menu>
     </a-layout-sider>
     <a-layout-content
@@ -79,9 +59,10 @@
 import axios from 'axios';
 import {defineComponent, onMounted, ref, reactive, toRef} from 'vue';
 import {StarOutlined, LikeOutlined, MessageOutlined} from '@ant-design/icons-vue';
+import {message} from 'ant-design-vue';
+import {Tool} from '@/util/tool';
 
 const listData: Record<string, string>[] = [];
-
 export default defineComponent({
   components: {
     StarOutlined,
@@ -89,19 +70,52 @@ export default defineComponent({
     MessageOutlined,
   },
 
+
   /* vue3 新增的 */
   setup() {
+    const level1 = ref(); // 一级分类树，children属性就是二级分类
+    level1.value = [];
+
     const ebooks = ref(); // 响应式的数据：可实时刷新到界面上
-    const ebooks1 = reactive({books: []}); // vue3新增的一个函数 books是一个json对象 这里先放一个空数组 后面得到数据后再添加
+    // const ebooks1 = reactive({books: []}); // vue3新增的一个函数 books是一个json对象 这里先放一个空数组 后面得到数据后再添加
+
+    /**
+     * 查询分类列表数据
+     **/
+    const categorysQueryHandle = (params: any) => {
+      // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
+      axios.get('/category/allList', {
+            //params:{} 是axios固定写法 而且一般不会把整个params传入进去 都是写好要哪些
+            params: {
+              name: params.name ? params.name : 'list',
+            }
+          }
+      ).then((res) => {
+        const data = res.data;
+        if (data.success) {
+          const categorys = data.data;
+
+          level1.value = [];
+          level1.value = Tool.array2Tree(categorys, 0);// 递归 初始条件是找到父亲
+
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
 
     /**
      * onMounted是指页面加载的时候会加载的函数 跟微信小城西onload一样
      */
     onMounted(() => {
+      // 查询分类列表数据
+      categorysQueryHandle({}),
+
+      // 查询电子书列表数据
       axios.get("/ebook/list").then((res) => {
         const data = res.data;
         ebooks.value = data.data.list;
-        ebooks1.books = data.data;
+        // ebooks1.books = data.data;
 
       });
     });
@@ -126,10 +140,14 @@ export default defineComponent({
      */
     return {
       ebooks,
-      books: toRef(ebooks1, "books"),// 这里需要把他转为ref对象 再return出去
+      // books: toRef(ebooks1, "books"),// 这里需要把他转为ref对象 再return出去
       listData,
       pagination,
       actions,
+
+      //category menu
+      categorysQueryHandle,
+      level1,
     }
   }
 })
