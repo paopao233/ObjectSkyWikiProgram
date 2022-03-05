@@ -17,6 +17,11 @@ public class EbookQueryDto extends PageDto{
     private Long id;
 
     /**
+     * 二级分类id
+     */
+    private Long categoryId2;
+
+    /**
      * 名称
      */
     private String name;

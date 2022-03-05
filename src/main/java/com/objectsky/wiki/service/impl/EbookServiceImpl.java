@@ -51,6 +51,11 @@ public class EbookServiceImpl extends ServiceImpl<EbookMapper, Ebook> implements
             wrapper.like("name", name);
         }
 
+        // 根据分类id2 查询
+        if (!ObjectUtils.isEmpty(ebookDto.getCategoryId2())) {
+            wrapper.like("category2_id", ebookDto.getCategoryId2());
+        }
+
         // 分页查询
         PageHelper.startPage(ebookDto.getPage(), ebookDto.getSize()); // 只对遇到对第一个sql起作用
         List<Ebook> ebooksListDb = ebookMapper.selectList(wrapper);

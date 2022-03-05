@@ -79,7 +79,7 @@ export default defineComponent({
   /* vue3 新增的 */
   setup() {
     const isShowWelcome = ref(true);
-
+    let categoryId2 = 0; // 二级分类的id
     const level1 = ref(); // 一级分类树，children属性就是二级分类
     level1.value = [];
 
@@ -112,19 +112,56 @@ export default defineComponent({
     };
 
     /**
+     * 查询电子书列表数据
+     */
+    const bookListHandle = () => {
+      axios.get("/ebook/list",{
+        params:{
+          categoryId2: categoryId2,
+        }
+      }).then((res) => {
+        const data = res.data;
+        if(data.success){
+          ebooks.value = data.data.list;
+          // ebooks1.books = data.data;
+        }else{
+          if (data.message === "查询后列表为空，请检查参数"){
+            message.error("该分类下没有电子书哦～换一个分类吧");
+            ebooks.value = [];
+          }else{
+            message.error(data.message);
+          }
+        }
+
+
+      });
+    }
+
+    /**
+     * 侧边栏菜单点击事件
+     */
+    const submenuHandleClick = (value: any) => {
+      // isShowWelcome.value = value === "welcome";
+
+      if (value.key == "welcome") {
+        isShowWelcome.value = true;
+      } else {
+        categoryId2 = value.key;
+        isShowWelcome.value = false;
+        bookListHandle();
+      }
+    };
+
+    /**
      * onMounted是指页面加载的时候会加载的函数 跟微信小城西onload一样
      */
     onMounted(() => {
+      // 查询电子书
+      // bookListHandle(),
+
       // 查询分类列表数据
-      categorysQueryHandle({}),
+      categorysQueryHandle({})
 
-          // 查询电子书列表数据
-          axios.get("/ebook/list").then((res) => {
-            const data = res.data;
-            ebooks.value = data.data.list;
-            // ebooks1.books = data.data;
-
-          });
     });
 
     /**
@@ -132,7 +169,7 @@ export default defineComponent({
      */
     const pagination = {
       onChange: (page: number) => {
-        console.log(page);
+        // console.log(page);
       },
       pageSize: 3,
     };
@@ -142,12 +179,7 @@ export default defineComponent({
       {type: 'MessageOutlined', text: '2'},
     ];
 
-    /**
-     * 侧边栏菜单点击事件
-     */
-    const submenuHandleClick = (value: any) => {
-      isShowWelcome.value = value === "welcome";
-    }
+
     /**
      * html代码要拿到响应式的变量，所以要在setup最后return出去
      */
