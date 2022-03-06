@@ -102,10 +102,26 @@
       :confirm-loading="confirmLoading"
       @ok="handleOk"
   >
-    <!--  doc这里是新的响应式  -->
+    <!--  level1这里是新的响应式  -->
     <a-form :model="level1" :label-col="{span: 6}" :wrapper-col="wrapperCol">
       <a-form-item label="名称">
         <a-input v-model:value="doc.name"/>
+      </a-form-item>
+      <a-form-item label="父文档">
+        <a-select-option value="0">
+          无
+        </a-select-option>
+        <a-tree-select
+            v-model:value="doc.parent"
+            style="width: 100%"
+            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+            placeholder="请选择父文档"
+            tree-default-expand-all
+            :tree-data="treeSelectData"
+            :replaceFields="{title:'name',key:'id',value:'id'}"
+            :disabled="key === doc.parent"
+        >
+        </a-tree-select>
       </a-form-item>
       <a-form-item label="父文档">
         <a-select
@@ -168,6 +184,33 @@ export default defineComponent({
     ];
 
     /**
+     * 使用递归方法，将某节点及其子节点全部置为disabled
+     */
+    const setDisable = (treeSelectData: any, id: number) => {
+      //遍历数组
+      for (let i = 0; i < treeSelectData.length; i++) {
+        const node = treeSelectData[i];
+        if (node.id === id) {
+          node.disabled = "disabled";
+
+          // 遍历所有子节点 将所有子节点都加上disabled
+          const children = node.children;
+          if (Tool.isNotEmpty(children)) {
+            for (let j = 0; j < children.length; j++) {
+              setDisable(children, children[j].id);
+            }
+          }
+        } else {
+          const children = node.children;
+          if (Tool.isNotEmpty(children)) {
+            setDisable(children, id);
+          }
+        }
+
+      }
+    }
+
+    /**
      * 一级文档树，children属性就是二级文档 支持无限级
      * [{
      *   id: "",
@@ -179,7 +222,7 @@ export default defineComponent({
      * }]
      */
     const level1 = ref(); // 一级文档树，children属性就是二级文档
-    level1.value = [];
+    const treeSelectData = ref(); // 树形下拉框的响应式数据
 
     /**
      * 数据查询
@@ -187,6 +230,7 @@ export default defineComponent({
     const handleQuery = (params: any) => {
       loading.value = true;
       // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
+      level1.value = [];
       axios.get('/doc/allList', {
             //params:{} 是axios固定写法 而且一般不会把整个params传入进去 都是写好要哪些
             params: {
@@ -208,14 +252,6 @@ export default defineComponent({
       });
     };
 
-    /**
-     * 表格点击页码时触发
-     */
-    const handleTableChange = (pagination: any) => {
-      // console.log("看看自带的分页参数都有啥：" + pagination);
-      handleQuery({});
-    };
-
     // -------- 表单 ---------
     const doc = ref({});
     const visible = ref<boolean>(false);
@@ -229,6 +265,15 @@ export default defineComponent({
       visible.value = true;
       // doc.value = record; // 响应式的变量都是得用value ； 如果把值直接给doc 会有响应式问题
       doc.value = Tool.copy(record);
+
+      // 把level1复制一份 重新定义treeData
+      treeSelectData.value = Tool.copy(level1.value);
+
+      // 将该节点下的子节点页包括自己 都disabled
+      setDisable(treeSelectData.value, record.id);
+
+      // 为选择树添加一个"无" unshift是指在数组前面添加一个节点
+      treeSelectData.value.unshift({id: 0, name: '无'})
     };
 
     /**
@@ -254,6 +299,12 @@ export default defineComponent({
     const add = () => {
       visible.value = true;
       doc.value = {}; // 清空doc
+
+      // 把level1复制一份 重新定义treeData
+      treeSelectData.value = Tool.copy(level1.value);
+
+      // 为选择树添加一个"无" unshift是指在数组前面添加一个节点
+      treeSelectData.value.unshift({id: 0, name: '无'})
     };
 
     /**
@@ -292,6 +343,7 @@ export default defineComponent({
       }
     };
 
+
     /**
      * 初始化函数
      */
@@ -306,7 +358,6 @@ export default defineComponent({
       // table list
       columns,
       loading,
-      handleTableChange,
 
       // modal
       visible,
@@ -329,7 +380,7 @@ export default defineComponent({
 
       // table
       level1,
-
+      treeSelectData,
     }
   }
 });
