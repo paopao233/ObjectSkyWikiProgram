@@ -136,10 +136,11 @@
 
 <script lang="ts">
 import axios from 'axios';
-import {defineComponent, onMounted, ref} from 'vue';
-import {message} from "ant-design-vue";
+import {createVNode, defineComponent, onMounted, ref} from 'vue';
+import {message, Modal} from "ant-design-vue";
 import {Tool} from "@/util/tool";
 import {useRoute} from "vue-router";
+import {ExclamationCircleOutlined} from '@ant-design/icons-vue';
 
 export default defineComponent({
 
@@ -177,7 +178,7 @@ export default defineComponent({
     /**
      * 使用递归方法，将某节点及其子节点的id存储起来
      */
-    const idList: Array<String> = [];
+    let idList: Array<String> = [];
     const getDeleteIdList = (treeSelectData: any, id: number) => {
       //遍历数组
 
@@ -296,22 +297,58 @@ export default defineComponent({
       treeSelectData.value.unshift({id: 0, name: '无'})
     };
 
+
+    const showModal = () => {
+      visible.value = true;
+    };
+
     /**
      * 删除
      * @param record
      */
     const deleteHandle = (id: number) => {
+      idList = []; // 没有这个会把其他id也带进来的！
       getDeleteIdList(level1.value, id); // 响应式变量 ！
-      axios.post('/doc/delete/' + idList).then((res) => {
-        const data = res.data;
-        if (data.success) {
-          // 重新加载列表
-          handleQuery({});
-          message.success("文档删除成功～");
-        } else {
-          message.error(data.message);
-        }
-      });
+
+      const axiosDelete = () => {
+        getDeleteIdList(level1.value, id); // 响应式变量 ！
+        axios.post('/doc/delete/' + idList).then((res) => {
+          const data = res.data;
+          if (data.success) {
+            // 重新加载列表
+            handleQuery({});
+            message.success("文档删除成功～");
+          } else {
+            message.error(data.message);
+          }
+        });
+      }
+
+      const showDeleteConfirm = () => {
+        Modal.confirm({
+          title: () => '你真的要删除吗？',
+          icon: () => createVNode(ExclamationCircleOutlined),
+          content: () => '要删除的文档还包括其他文档，你确定要一起删除吗？（该操作不可逆，请谨慎操作。）',
+          okText: () => '确定',
+          okType: 'danger',
+          cancelText: () => '取消',
+          onOk() {
+            axiosDelete();
+          },
+          onCancel() {
+            console.log('Cancel');
+          },
+        });
+      };
+
+      // 父文档有孩子才提示
+      if (idList.length > 1) {
+        showDeleteConfirm();
+      } else {
+        axiosDelete();
+      }
+
+
     };
 
     /**
