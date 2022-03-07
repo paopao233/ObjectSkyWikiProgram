@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -82,16 +83,11 @@ public class DocController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
-    public CommonResp docDeleteById(@PathVariable Long id) {
+    @RequestMapping(value = "/delete/{idsStr}", method = RequestMethod.POST)
+    public CommonResp docDeleteById(@PathVariable String idsStr) {
         CommonResp<Object> resp = new CommonResp<>();
-        int count = docService.docDeleteById(id);
-
-        // if delete not working
-        if (count == 0) {
-            resp.setMessage("不存在要删除的文档！");
-            resp.setSuccess(false);
-        }
+        List<String> idList = Arrays.asList(idsStr.split(","));
+        int count = docService.docDeleteById(idList);
 
         return resp;
     }

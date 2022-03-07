@@ -175,6 +175,35 @@ export default defineComponent({
     ];
 
     /**
+     * 使用递归方法，将某节点及其子节点的id存储起来
+     */
+    const idList: Array<String> = [];
+    const getDeleteIdList = (treeSelectData: any, id: number) => {
+      //遍历数组
+
+      for (let i = 0; i < treeSelectData.length; i++) {
+        const node = treeSelectData[i];
+        if (node.id === id) {
+          idList.push(node.id);
+
+          // 遍历所有子节点
+          const children = node.children;
+          if (Tool.isNotEmpty(children)) {
+            for (let j = 0; j < children.length; j++) {
+              getDeleteIdList(children, children[j].id);
+            }
+          }
+        } else {
+          const children = node.children;
+          if (Tool.isNotEmpty(children)) {
+            getDeleteIdList(children, id);
+          }
+        }
+
+      }
+    }
+
+    /**
      * 使用递归方法，将某节点及其子节点全部置为disabled
      */
     const setDisable = (treeSelectData: any, id: number) => {
@@ -272,7 +301,8 @@ export default defineComponent({
      * @param record
      */
     const deleteHandle = (id: number) => {
-      axios.post('/doc/delete/' + id).then((res) => {
+      getDeleteIdList(level1.value, id); // 响应式变量 ！
+      axios.post('/doc/delete/' + idList).then((res) => {
         const data = res.data;
         if (data.success) {
           // 重新加载列表

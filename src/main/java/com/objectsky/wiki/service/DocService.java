@@ -43,4 +43,10 @@ public interface DocService extends IService<Doc> {
      * @param id
      */
     int docDeleteById(Long id);
+
+    /**
+     * 文档删除 多个id一次性删除
+     * @param idList
+     */
+    int docDeleteById(List<String> idList);
 }

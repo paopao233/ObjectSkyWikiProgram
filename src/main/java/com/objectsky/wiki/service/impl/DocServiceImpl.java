@@ -131,4 +131,13 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
         }
         return count;
     }
+
+    @Override
+    public int docDeleteById(List<String> idList) {
+        int count = docMapper.deleteBatchIds(idList);
+        if(count == 0){
+            throw new RuntimeException("删除失败！");
+        }
+        return count;
+    }
 }
