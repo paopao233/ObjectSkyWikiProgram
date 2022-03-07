@@ -71,11 +71,11 @@
           <img v-if="cover" :src="cover" alt="avatar">
         </template>
         <template v-slot:category="{text,record}">
-        <span>{{getCategoryName(record.category1Id)}} / {{getCategoryName(record.category2Id)}}</span>
+          <span>{{ getCategoryName(record.category1Id) }} / {{ getCategoryName(record.category2Id) }}</span>
         </template>
         <template v-slot:action="{text,record}">
           <a-space size="small">
-            <router-link to="/admin/doc">
+            <router-link :to="'/admin/doc?ebookId=' + record.id">
               <a-button type="default">
                 文档管理
               </a-button>
@@ -288,8 +288,8 @@ export default defineComponent({
      */
     const getCategoryName = (cid: number) => {
       let result = "";
-      categorys.forEach((item:any) =>{
-        if (item.id == cid){
+      categorys.forEach((item: any) => {
+        if (item.id == cid) {
           result = item.name;
         }
       });

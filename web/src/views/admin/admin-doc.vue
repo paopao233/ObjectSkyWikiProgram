@@ -119,23 +119,10 @@
             tree-default-expand-all
             :tree-data="treeSelectData"
             :replaceFields="{title:'name',key:'id',value:'id'}"
-            :disabled="key === doc.parent"
         >
         </a-tree-select>
       </a-form-item>
-      <a-form-item label="父文档">
-        <a-select
-            ref="select"
-            v-model:value="doc.parent"
-        >
-          <a-select-option value="0">
-            无
-          </a-select-option>
-          <a-select-option v-for="c in level1" :value="c.id" :key="c.id" :disabled="doc.id === c.id">
-            {{ c.name }}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
+
       <a-form-item label="排序">
         <a-input v-model:value="doc.sort"/>
       </a-form-item>
@@ -152,12 +139,16 @@ import axios from 'axios';
 import {defineComponent, onMounted, ref} from 'vue';
 import {message} from "ant-design-vue";
 import {Tool} from "@/util/tool";
+import {useRoute} from "vue-router";
 
 export default defineComponent({
 
   /* setup() vue3 新增的 */
   name: 'AdminDoc',
   setup() {
+    // 接收来自路由传递过来的参数
+    const route = useRoute();
+
     const value = ref<string>(''); // 搜索框的值
     const docs = ref(); // 响应式的数据：可实时刷新到界面上
 
@@ -298,7 +289,9 @@ export default defineComponent({
      */
     const add = () => {
       visible.value = true;
-      doc.value = {}; // 清空doc
+      doc.value = {
+        ebookId: route.query.ebookId,
+      }; // 清空doc
 
       // 把level1复制一份 重新定义treeData
       treeSelectData.value = Tool.copy(level1.value);
