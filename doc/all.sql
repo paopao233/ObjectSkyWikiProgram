@@ -1,4 +1,4 @@
-##电子书
+### 电子书
 select *
 from ebook;
 
@@ -13,7 +13,8 @@ values (4, "Javascript菜鸟教程", "零基础入门Javascript开发 企业级�
 insert into ebook (id, name, description)
 values (5, "Python零基础入门教程", "零基础入门m开发 企业级应用开发最佳选项");
 
-## 分类表
+
+### 分类表
 drop table if exists `category`;
 create table `category`
 (
@@ -66,6 +67,7 @@ select *
 from category;
 
 
+
 ### 文档表
 drop table if exists `doc`;
 create table `doc`
@@ -93,4 +95,18 @@ VALUES (5, 1, 3, '文档2.2', 2, 0, 0);
 insert into `doc` (id, ebook_id, parent, name, sort, view_count, vote_count)
 VALUES (6, 1, 5, '文档2.2.1', 1, 0, 0);
 
-select * from doc;
+select *
+from doc;
+
+
+
+### 文档内容
+drop table if exists `content`;
+create table `content`
+(
+    `id`      bigint     not null comment '文档id，与文档表关联',
+    `content` mediumtext not null comment '内容',
+    primary key (`id`)
+) engine = innodb
+  default charset = utf8mb4 comment ='文档内容';
+
