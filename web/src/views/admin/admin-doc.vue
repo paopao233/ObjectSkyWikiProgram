@@ -126,6 +126,11 @@
       <a-form-item label="排序">
         <a-input v-model:value="doc.sort"/>
       </a-form-item>
+      <a-form-item label="内容">
+      <div id="content">
+
+      </div>
+      </a-form-item>
 
 
     </a-form>
@@ -141,12 +146,17 @@ import {message, Modal} from "ant-design-vue";
 import {Tool} from "@/util/tool";
 import {useRoute} from "vue-router";
 import {ExclamationCircleOutlined} from '@ant-design/icons-vue';
+import E from "wangeditor"
 
 export default defineComponent({
 
   /* setup() vue3 新增的 */
   name: 'AdminDoc',
   setup() {
+    // 富文本
+    const editor = new E("#content")
+
+
     // 接收来自路由传递过来的参数
     const route = useRoute();
 
@@ -284,6 +294,7 @@ export default defineComponent({
      */
     const edit = (record: any) => {
       visible.value = true;
+
       // doc.value = record; // 响应式的变量都是得用value ； 如果把值直接给doc 会有响应式问题
       doc.value = Tool.copy(record);
 
@@ -295,6 +306,11 @@ export default defineComponent({
 
       // 为选择树添加一个"无" unshift是指在数组前面添加一个节点
       treeSelectData.value.unshift({id: 0, name: '无'})
+
+      // 由于modal初始化需要时间 而富文本框很快就初始化好了 所以要有一个时间等待
+      setTimeout(function () {
+        editor.create();// 初始化富文本
+      },100);
     };
 
 
@@ -365,6 +381,11 @@ export default defineComponent({
 
       // 为选择树添加一个"无" unshift是指在数组前面添加一个节点
       treeSelectData.value.unshift({id: 0, name: '无'})
+
+      // 由于modal初始化需要时间 而富文本框很快就初始化好了 所以要有一个时间等待
+      setTimeout(function () {
+        editor.create();// 初始化富文本
+      },200);
     };
 
     /**
@@ -412,6 +433,7 @@ export default defineComponent({
     });
 
     return {
+
       //--- 方法内调用的不需要return
       handleQuery,
       // docs,
