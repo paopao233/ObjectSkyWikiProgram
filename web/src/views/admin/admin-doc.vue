@@ -47,95 +47,104 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <a-input-search
-          v-model:value="value"
-          placeholder="请输入要查询的名称"
-          enter-button="搜索"
-          style="width: 400px;margin-right: 10px"
-          @search="onSearch"
-          size="large"
-      />
-      <a-button type="primary" @click="add" size="large" style="margin-right: 10px">
-        新增
-      </a-button>
-      <a-button type="primary" @click="handleQuery" size="large">
-        查询所有
-      </a-button>
-      <!--   data-source是一个列表 会被循环   -->
-      <a-table
-          :dataSource="level1"
-          :columns="columns"
-          :row-key="record => record.id"
-          :pagination="false"
-          :loading="loading"
-          @change="handleTableChange"
-      >
-        <template #cover="{text:cover}">
-          <img v-if="cover" :src="cover" alt="avatar">
-        </template>
-        <template v-slot:action="{text,record}">
-          <a-space size="small">
-            <a-button type="primary" @click="edit(record)">
-              编辑
-            </a-button>
-            <a-popconfirm
-                title="你确定要删除吗？该操作不可逆。"
-                ok-text="确定"
-                cancel-text="取消"
-                @confirm="deleteHandle(record.id)"
-            >
-              <a-button type="danger">
-                删除
-              </a-button>
-            </a-popconfirm>
+      <a-row>
+        <a-col :span="8">
+          <a-input-search
+              v-model:value="value"
+              placeholder="请输入要查询的名称"
+              enter-button="搜索"
+              style="width: 300px;margin-right: 10px"
+              @search="onSearch"
+              size="large"
+          />
+          <a-button type="primary" @click="add" size="large" style="margin-right: 10px">
+            新增
+          </a-button>
+          <a-button type="primary" @click="handleQuery" size="large">
+            查询所有
+          </a-button>
+          <!--   data-source是一个列表 会被循环   -->
+          <a-table
+              :dataSource="level1"
+              :columns="columns"
+              :row-key="record => record.id"
+              :pagination="false"
+              :loading="loading"
+              @change="handleTableChange"
+          >
+            <template #cover="{text:cover}">
+              <img v-if="cover" :src="cover" alt="avatar">
+            </template>
+            <template v-slot:action="{text,record}">
+              <a-space size="small">
+                <a-button type="primary" @click="edit(record)">
+                  编辑
+                </a-button>
+                <a-popconfirm
+                    title="你确定要删除吗？该操作不可逆。"
+                    ok-text="确定"
+                    cancel-text="取消"
+                    @confirm="deleteHandle(record.id)"
+                >
+                  <a-button type="danger">
+                    删除
+                  </a-button>
+                </a-popconfirm>
 
-          </a-space>
-        </template>
-      </a-table>
+              </a-space>
+            </template>
+          </a-table>
+        </a-col>
+
+        <a-col :span="16">
+          <!--  level1这里是新的响应式  -->
+          <a-form :model="level1" :label-col="{span: 6}" :wrapper-col="wrapperCol">
+            <a-form-item label="名称">
+              <a-input v-model:value="doc.name"/>
+            </a-form-item>
+            <a-form-item label="父文档">
+              <a-select-option value="0">
+                无
+              </a-select-option>
+              <a-tree-select
+                  v-model:value="doc.parent"
+                  style="width: 100%"
+                  :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                  placeholder="请选择父文档"
+                  tree-default-expand-all
+                  :tree-data="treeSelectData"
+                  :replaceFields="{title:'name',key:'id',value:'id'}"
+              >
+              </a-tree-select>
+            </a-form-item>
+
+            <a-form-item label="排序">
+              <a-input v-model:value="doc.sort"/>
+            </a-form-item>
+            <a-form-item label="内容">
+              <div id="content">
+
+              </div>
+            </a-form-item>
+
+
+          </a-form>
+
+        </a-col>
+      </a-row>
+
     </a-layout-content>
   </a-layout>
 
   <!-- vue2的template下只能有一个节点，但是vue3是支持多个节点的 -->
-  <a-modal
-      title="文档表单"
-      v-model:visible="visible"
-      :confirm-loading="confirmLoading"
-      @ok="handleOk"
-  >
-    <!--  level1这里是新的响应式  -->
-    <a-form :model="level1" :label-col="{span: 6}" :wrapper-col="wrapperCol">
-      <a-form-item label="名称">
-        <a-input v-model:value="doc.name"/>
-      </a-form-item>
-      <a-form-item label="父文档">
-        <a-select-option value="0">
-          无
-        </a-select-option>
-        <a-tree-select
-            v-model:value="doc.parent"
-            style="width: 100%"
-            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-            placeholder="请选择父文档"
-            tree-default-expand-all
-            :tree-data="treeSelectData"
-            :replaceFields="{title:'name',key:'id',value:'id'}"
-        >
-        </a-tree-select>
-      </a-form-item>
+<!--  <a-modal-->
+<!--      title="文档表单"-->
+<!--      v-model:visible="visible"-->
+<!--      :confirm-loading="confirmLoading"-->
+<!--      @ok="handleOk"-->
+<!--  >-->
+<!--  </a-modal>-->
 
-      <a-form-item label="排序">
-        <a-input v-model:value="doc.sort"/>
-      </a-form-item>
-      <a-form-item label="内容">
-      <div id="content">
-
-      </div>
-      </a-form-item>
-
-
-    </a-form>
-
-  </a-modal>
 </template>
 
 
@@ -168,11 +177,6 @@ export default defineComponent({
       {
         title: '名称',
         dataIndex: 'name'
-      },
-      {
-        title: '父文档',
-        key: 'parent',
-        dataIndex: 'parent'
       },
       {
         title: '顺序',
