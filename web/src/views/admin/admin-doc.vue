@@ -47,7 +47,7 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <a-row>
+      <a-row :gutter="24">
         <a-col :span="8">
           <a-input-search
               v-model:value="value"
@@ -65,19 +65,22 @@
           </a-button>
           <!--   data-source是一个列表 会被循环   -->
           <a-table
+              v-if="level1.length > 0"
+              size="small"
               :dataSource="level1"
               :columns="columns"
               :row-key="record => record.id"
               :pagination="false"
               :loading="loading"
+              :defaultExpandAllRows="true"
               @change="handleTableChange"
           >
-            <template #cover="{text:cover}">
-              <img v-if="cover" :src="cover" alt="avatar">
+            <template #name="{text,record}">
+              {{ record.sort }} {{ text }}
             </template>
             <template v-slot:action="{text,record}">
               <a-space size="small">
-                <a-button type="primary" @click="edit(record)">
+                <a-button type="primary" @click="edit(record)" size="small">
                   编辑
                 </a-button>
                 <a-popconfirm
@@ -86,7 +89,7 @@
                     cancel-text="取消"
                     @confirm="deleteHandle(record.id)"
                 >
-                  <a-button type="danger">
+                  <a-button type="danger" size="small">
                     删除
                   </a-button>
                 </a-popconfirm>
@@ -97,10 +100,19 @@
         </a-col>
 
         <a-col :span="16">
+          <p>
+            <a-form layout="inline" :model="param">
+              <a-form-item>
+                <a-button type="primary" @click="handleSave">
+                  保存
+                </a-button>
+              </a-form-item>
+            </a-form>
+          </p>
           <!--  level1这里是新的响应式  -->
-          <a-form :model="level1" :label-col="{span: 6}" :wrapper-col="wrapperCol">
+          <a-form :model="level1" :label-col="{span: 6}" :wrapper-col="wrapperCol" layout="vertical">
             <a-form-item label="名称">
-              <a-input v-model:value="doc.name"/>
+              <a-input v-model:value="doc.name" placeholder="请输入名称" />
             </a-form-item>
             <a-form-item label="父文档">
               <a-select-option value="0">
@@ -119,8 +131,9 @@
             </a-form-item>
 
             <a-form-item label="排序">
-              <a-input v-model:value="doc.sort"/>
+              <a-input v-model:value="doc.sort" placeholder="请输入顺序" />
             </a-form-item>
+
             <a-form-item label="内容">
               <div id="content">
 
@@ -137,13 +150,13 @@
   </a-layout>
 
   <!-- vue2的template下只能有一个节点，但是vue3是支持多个节点的 -->
-<!--  <a-modal-->
-<!--      title="文档表单"-->
-<!--      v-model:visible="visible"-->
-<!--      :confirm-loading="confirmLoading"-->
-<!--      @ok="handleOk"-->
-<!--  >-->
-<!--  </a-modal>-->
+  <!--  <a-modal-->
+  <!--      title="文档表单"-->
+  <!--      v-model:visible="visible"-->
+  <!--      :confirm-loading="confirmLoading"-->
+  <!--      @ok="handleOk"-->
+  <!--  >-->
+  <!--  </a-modal>-->
 
 </template>
 
@@ -164,7 +177,7 @@ export default defineComponent({
   setup() {
     // 富文本
     const editor = new E("#content")
-
+    editor.config.zIndex = 0;// 父文本的权重
 
     // 接收来自路由传递过来的参数
     const route = useRoute();
@@ -177,10 +190,6 @@ export default defineComponent({
       {
         title: '名称',
         dataIndex: 'name'
-      },
-      {
-        title: '顺序',
-        dataIndex: 'sort'
       },
       {
         title: '操作',
@@ -257,6 +266,7 @@ export default defineComponent({
      * }]
      */
     const level1 = ref(); // 一级文档树，children属性就是二级文档
+    level1.value = [];
     const treeSelectData = ref(); // 树形下拉框的响应式数据
 
     /**
@@ -312,9 +322,10 @@ export default defineComponent({
       treeSelectData.value.unshift({id: 0, name: '无'})
 
       // 由于modal初始化需要时间 而富文本框很快就初始化好了 所以要有一个时间等待
-      setTimeout(function () {
-        editor.create();// 初始化富文本
-      },100);
+      // 取消modal  就不需要了
+      // setTimeout(function () {
+      //   editor.create();// 初始化富文本
+      // }, 100);
     };
 
 
@@ -387,15 +398,15 @@ export default defineComponent({
       treeSelectData.value.unshift({id: 0, name: '无'})
 
       // 由于modal初始化需要时间 而富文本框很快就初始化好了 所以要有一个时间等待
-      setTimeout(function () {
-        editor.create();// 初始化富文本
-      },200);
+      // setTimeout(function () {
+      //   editor.create();// 初始化富文本
+      // }, 200);
     };
 
     /**
      * 点击修改保存数据
      */
-    const handleOk = () => {
+    const handleSave = () => {
       confirmLoading.value = true;
       axios.post('/doc/save', doc.value).then((res) => {
         const data = res.data;
@@ -434,6 +445,7 @@ export default defineComponent({
      */
     onMounted(() => {
       handleQuery({});
+      editor.create();// 初始化富文本
     });
 
     return {
@@ -449,7 +461,7 @@ export default defineComponent({
       visible,
       confirmLoading,
       edit,
-      handleOk,
+      handleSave,
 
       // form
       doc,
