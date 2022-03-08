@@ -103,7 +103,7 @@
           <p>
             <a-form layout="inline" :model="param">
               <a-form-item>
-                <a-button type="primary" @click="handleSave">
+                <a-button type="primary" @click="handleSave()">
                   保存
                 </a-button>
               </a-form-item>
@@ -112,7 +112,7 @@
           <!--  level1这里是新的响应式  -->
           <a-form :model="level1" :label-col="{span: 6}" :wrapper-col="wrapperCol" layout="vertical">
             <a-form-item label="名称">
-              <a-input v-model:value="doc.name" placeholder="请输入名称" />
+              <a-input v-model:value="doc.name" placeholder="请输入名称"/>
             </a-form-item>
             <a-form-item label="父文档">
               <a-select-option value="0">
@@ -131,7 +131,7 @@
             </a-form-item>
 
             <a-form-item label="排序">
-              <a-input v-model:value="doc.sort" placeholder="请输入顺序" />
+              <a-input v-model:value="doc.sort" placeholder="请输入顺序"/>
             </a-form-item>
 
             <a-form-item label="内容">
@@ -175,15 +175,17 @@ export default defineComponent({
   /* setup() vue3 新增的 */
   name: 'AdminDoc',
   setup() {
-    // 富文本
-    const editor = new E("#content")
-    editor.config.zIndex = 0;// 父文本的权重
 
     // 接收来自路由传递过来的参数
     const route = useRoute();
 
     const value = ref<string>(''); // 搜索框的值
     const docs = ref(); // 响应式的数据：可实时刷新到界面上
+    docs.value = [];
+
+    // 富文本
+    const editor = new E("#content")
+    editor.config.zIndex = 0;// 父文本的权重
 
     const loading = ref(false);
     const columns = [
@@ -298,7 +300,8 @@ export default defineComponent({
     };
 
     // -------- 表单 ---------
-    const doc = ref({});
+    const doc = ref();
+    doc.value = {};
     const visible = ref<boolean>(false);
     const confirmLoading = ref<boolean>(false);
 
@@ -408,6 +411,8 @@ export default defineComponent({
      */
     const handleSave = () => {
       confirmLoading.value = true;
+      doc.value.content = editor.txt.html();
+
       axios.post('/doc/save', doc.value).then((res) => {
         const data = res.data;
         if (data.success) {

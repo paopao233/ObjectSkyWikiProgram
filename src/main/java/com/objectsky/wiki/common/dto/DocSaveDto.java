@@ -58,4 +58,9 @@ public class DocSaveDto implements Serializable {
     private Integer voteCount;
 
 
+    /**
+     * 内容
+     */
+    @NotNull(message = "【内容】不能为空")
+    private String content;
 }

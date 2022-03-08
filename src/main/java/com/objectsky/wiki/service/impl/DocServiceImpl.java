@@ -1,6 +1,7 @@
 package com.objectsky.wiki.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -11,7 +12,9 @@ import com.objectsky.wiki.common.utils.CopyUtil;
 import com.objectsky.wiki.common.utils.SnowFlake;
 import com.objectsky.wiki.common.vo.DocQueryVo;
 import com.objectsky.wiki.common.vo.PageVo;
+import com.objectsky.wiki.entity.Content;
 import com.objectsky.wiki.entity.Doc;
+import com.objectsky.wiki.mapper.ContentMapper;
 import com.objectsky.wiki.mapper.DocMapper;
 import com.objectsky.wiki.service.DocService;
 import org.slf4j.Logger;
@@ -35,6 +38,9 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
 
     @Autowired
     private DocMapper docMapper;
+
+    @Autowired
+    private ContentMapper contentMapper;
 
     @Autowired
     private SnowFlake snowFlake;
@@ -111,14 +117,31 @@ public class DocServiceImpl extends ServiceImpl<DocMapper, Doc> implements DocSe
 
     @Override
     public void docSaveById(DocSaveDto docSaveDto) {
+        // 复制只会复制对应的属性
         Doc doc = CopyUtil.copy(docSaveDto, Doc.class);
+        Content content = CopyUtil.copy(docSaveDto, Content.class);
+
         if (ObjectUtils.isEmpty(docSaveDto.getId())) {
             // 新增
             doc.setId( snowFlake.nextId()); // 雪花id
             docMapper.insert(doc);
+
+            // 更新内容表
+            content.setId(doc.getId());
+            contentMapper.insert(content);
         } else {
             // 更新
             docMapper.updateById(doc);
+
+            // cpontent
+            UpdateWrapper<Content> contentUpdateWrapper = new UpdateWrapper<>();
+            contentUpdateWrapper.eq("id",doc.getId());
+
+            int count = contentMapper.update(content,contentUpdateWrapper);
+
+            if (count == 0){
+                contentMapper.insert(content);
+            }
         }
     }
 
